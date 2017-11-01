@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # SeismicBox
 This is a package for seismic wave propagation simulation, migration and inversion for 2D/3D and Acoustic/Elastic medium
 
@@ -70,3 +71,7 @@ writeinfo()
 
     (1) Read basis file and reshape basis to a certain size
       basis = ReadBasis(Path)
+=======
+# SeiSimu
+Seismic Simulation Package
+>>>>>>> 7d1cb359e596d62551810e900a7e2582b1b687a1
