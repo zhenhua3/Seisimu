@@ -18,11 +18,7 @@ function runsimu(model::Union{elmod2d,acmod2d},
         for it = 1:model.medium.nT
             addsou!(model.wf, sou, it)
             extrap2d!(model)
-            # if mod(it,showevery)==0
-            #     plt.show(plt.imshow(model.wf.txx))
-            # end
         end
-
 
 #=== Output Recordings only ===#
   elseif rec != nothing && Slices == nothing

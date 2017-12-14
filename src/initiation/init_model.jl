@@ -12,8 +12,7 @@ function initmodel{T1,T2,T3,T4<:Real}(
     dz = nothing,
     dx = nothing,
     dt= nothing,
-    nT= nothing,
-    mor = false)
+    nT= nothing)
 
     medium = model(pvel, svel, rho, DZ, HX, pkf, T, ext, iflag, dx, dz,dt,nT)
     nwf = initnelwf(medium.nDZ, medium.nHX, ext, iflag)
@@ -39,8 +38,7 @@ function initmodel{T1,T2,T3,T4<:Real}(
     dz = nothing,
     dx = nothing,
     dt= nothing,
-    nT= nothing,
-    mor = false)
+    nT= nothing)
 
     medium = model(pvel,rho, DZ, HX, pkf, T, ext, iflag, dx, dz,dt,nT)
     nwf = initnacwf(medium.nDZ, medium.nHX, ext, iflag)
@@ -73,8 +71,7 @@ function initmodel{T1,T2,T3,T4,T5<:Real}(
     dx = nothing,
     dy = nothing,
     dt= nothing,
-    nT= nothing,
-    mor = false)
+    nT= nothing)
 
     medium = model(pvel, svel, rho, DZ, HX, HY, pkf, T, ext, iflag, dx, dy, dz, dt,nT)
     nwf = initnelwf(medium.nDZ, medium.nHX, medium.nHY, ext, iflag)
@@ -107,8 +104,7 @@ function initmodel{T1,T2,T3,T4,T5<:Real}(
     dx = nothing,
     dy = nothing,
     dt= nothing,
-    nT= nothing,
-    mor = false)
+    nT= nothing)
 
     medium = model(pvel, rho, DZ, HX, HY, pkf, T, ext, iflag, dx, dy, dz, dt,nT)
     nwf = initnacwf(medium.nDZ, medium.nHX, medium.nHY, ext, iflag)

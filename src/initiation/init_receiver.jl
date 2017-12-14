@@ -9,7 +9,6 @@ end
 function initrec(
     nr::Int64,
     loc::Array{<:Real},
-    OptCpnt::Array{String},
     model::Union{elmod2d,acmod2d})
 
     ext = model.medium.ext
