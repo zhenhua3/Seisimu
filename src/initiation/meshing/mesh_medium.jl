@@ -432,7 +432,7 @@ end
 
     elseif typeof(pvel) != String
         if svel == nothing
-            svel = pvel./sqrt(3);
+            svel = pvel/sqrt(3);
         end
         if !(length(pvel)==length(svel)==length(DZ))
             error("Layer numbers of pvel, svel and depth should be the same. Please give a depth for each layer.")
@@ -521,17 +521,17 @@ end
         svel[i,:,:] = ModExpand(svel[i,:,ext+1:ext+nHY], ext, nothing)
          rho[i,:,:] = ModExpand( rho[i,:,ext+1:ext+nHY], ext, nothing)
     end
-    dz= Float32(dz)
-    dx= Float32(dx)
-    dy= Float32(dy)
-    dt= Float32(dt)
-    lambda = Array{Float32,3}(BDnDZ,BDnHX,BDnHY)
-    mu = Array{Float32,3}(BDnDZ,BDnHX,BDnHY)
-    Rho = Array{Float32,3}(BDnDZ,BDnHX,BDnHY)
+    # dz= Float64(dz)
+    # dx= Float64(dx)
+    # dy= Float64(dy)
+    # dt= Float64(dt)
+    lambda = Array{Float64,3}(BDnDZ,BDnHX,BDnHY)
+    mu = Array{Float64,3}(BDnDZ,BDnHX,BDnHY)
+    Rho = Array{Float64,3}(BDnDZ,BDnHX,BDnHY)
     for i in 1 : BDnDZ
         for j in 1 : BDnHX
             for k in 1 : BDnHY
-                lambda[i,j,k] = pvel[i,j,k]^2*rho[i,j,k]  - 2*svel[i,j,k]^2*rho[i,j,k]
+                lambda[i,j,k] = pvel[i,j,k]^2*rho[i,j,k] - 2*svel[i,j,k]^2*rho[i,j,k]
                 mu[i,j,k] = svel[i,j,k]^2*rho[i,j,k]
                 Rho[i,j,k] = rho[i,j,k]
             end
@@ -702,12 +702,12 @@ end
         pvel[i,:,:] = ModExpand(pvel[i,:,ext+1:ext+nHY], ext, nothing)
          rho[i,:,:] = ModExpand( rho[i,:,ext+1:ext+nHY], ext, nothing)
     end
-    dz= Float32(dz)
-    dx= Float32(dx)
-    dy= Float32(dy)
-    dt= Float32(dt)
-    lambda = Array{Float32,3}(BDnDZ,BDnHX,BDnHY)
-    Rho = Array{Float32,3}(BDnDZ,BDnHX,BDnHY)
+    # dz= Float32(dz)
+    # dx= Float32(dx)
+    # dy= Float32(dy)
+    # dt= Float32(dt)
+    lambda = Array{Float64,3}(BDnDZ,BDnHX,BDnHY)
+    Rho = Array{Float64,3}(BDnDZ,BDnHX,BDnHY)
     for i in 1 : BDnDZ
         for j in 1 : BDnHX
             for k in 1 : BDnHY

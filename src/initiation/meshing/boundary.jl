@@ -1,8 +1,8 @@
 type dpcf
-    bfull::Array{Float32,1}
-    bhalf::Array{Float32,1}
-    afull::Array{Float32,1}
-    ahalf::Array{Float32,1}
+    bfull::Array{Float64,1}
+    bhalf::Array{Float64,1}
+    afull::Array{Float64,1}
+    ahalf::Array{Float64,1}
 end
 
 
@@ -23,7 +23,7 @@ function DampCoeff(medium::Union{elastic2d,acoustic2d,elastic3d,acoustic3d})
        error("unsupported damping layers, choose from 5, 10 or 20")
     end
     a_max = 10*pi
-    tmp_a = linspace(a_max,0,ext)
+    tmp_a = linspace(0,a_max,ext)
     dWFfull = zeros(ext)
     dWFhalf = zeros(ext)
     maxv = maximum(medium.pvel)
@@ -31,10 +31,10 @@ function DampCoeff(medium::Union{elastic2d,acoustic2d,elastic3d,acoustic3d})
         dWFfull[i] = -maxv/ext * log(R) * (m*(ext+1-i)/ext + n*((ext+1-i )/ext)^ll)
         dWFhalf[i] = -maxv/ext * log(R) * (m*(ext+0.5-i)/ext + n*((ext+0.5-i)/ext)^ll)
     end
-    bhalf = Float32.(exp.(-(dWFhalf.+tmp_a).*medium.dt))
-    bfull = Float32.(exp.(-(dWFfull.+tmp_a).*medium.dt))
-    ahalf = Float32.(dWFhalf./(dWFhalf.+tmp_a).*(bhalf.-1))
-    afull = Float32.(dWFfull./(dWFfull.+tmp_a).*(bfull.-1))
+    bhalf = Float64.(exp.(-(dWFhalf.+tmp_a).*medium.dt))
+    bfull = Float64.(exp.(-(dWFfull.+tmp_a).*medium.dt))
+    ahalf = Float64.(dWFhalf./(dWFhalf.+tmp_a).*(bhalf.-1))
+    afull = Float64.(dWFfull./(dWFfull.+tmp_a).*(bfull.-1))
     return dpcf(bfull,bhalf,afull,ahalf)
 end
 
@@ -105,28 +105,25 @@ function BD(nwf::nacwf2d, medium::acoustic2d)
     # Vx
     indexZ = nwf.BDnvx[1]
     indexX = nwf.BDnvx[2] - nwf.nvx[2]
-    PVxBTxx = zeros(Float64,indexZ,indexX)
+    PVxBTpp = zeros(Float64,indexZ,indexX)
 
     # Vz
     indexZ = nwf.BDnvz[1] - nwf.nvz[1]
     indexX = nwf.BDnvz[2]
-    PVzBTzz = zeros(Float64,indexZ,indexX)
+    PVzBTpp = zeros(Float64,indexZ,indexX)
 
     # Tzz & Txx
     indexZ = nwf.BDntpp[1] - nwf.ntpp[1]
     indexX = nwf.BDntpp[2]
-    PTzzBVz = zeros(Float64,indexZ,indexX)
-    PTxxBVz = zeros(Float64,indexZ,indexX)
+    PTppBVz = zeros(Float64,indexZ,indexX)
 
     indexZ = nwf.BDntpp[1]
     indexX = nwf.BDntpp[2] - nwf.ntpp[2]
-    PTzzBVx = zeros(Float64,indexZ,indexX)
-    PTxxBVx = zeros(Float64,indexZ,indexX)
+    PTppBVx = zeros(Float64,indexZ,indexX)
 
     return acbd2d(Float64.(dpcf.bfull), Float64.(dpcf.bhalf), Float64.(dpcf.afull), Float64.(dpcf.ahalf),
-                      PVxBTxx, PVzBTzz, 
-                      PTxxBVx, PTxxBVz,
-                      PTzzBVx, PTzzBVz)
+                      PVxBTpp, PVzBTpp,
+                      PTppBVx, PTppBVz)
 end
 
 
@@ -142,109 +139,109 @@ function BD(nwf::nelwf3d, medium::elastic3d)
 
         # Vx
         indexZ = nwf.BDnvx[1]
-        indexX = nwf.BDnvx[2] - nwf.BDnvx[2]
+        indexX = nwf.BDnvx[2] - nwf.nvx[2]
         indexY = nwf.BDnvx[3]
-        PVxBTxx = zeros(Float32,indexZ,indexX,indexY)
+        PVxBTxx = zeros(Float64,indexZ,indexX,indexY)
 
         indexZ = nwf.BDnvx[1] - nwf.nvx[1]
         indexX = nwf.BDnvx[2]
         indexY = nwf.BDnvx[3]
-        PVxBTxz = zeros(Float32,indexZ,indexX,indexY)
+        PVxBTxz = zeros(Float64,indexZ,indexX,indexY)
 
         indexZ = nwf.BDnvx[1]
         indexX = nwf.BDnvx[2]
         indexY = nwf.BDnvx[3] - nwf.nvx[3]
-        PVxBTxy = zeros(Float32,indexZ,indexX,indexY)
+        PVxBTxy = zeros(Float64,indexZ,indexX,indexY)
 
         # Vy
         indexZ = nwf.BDnvy[1]
-        indexX = nwf.BDnvy[2] - nwf.BDnvx[2]
+        indexX = nwf.BDnvy[2] - nwf.nvy[2]
         indexY = nwf.BDnvy[3]
-        PVyBTxy = zeros(Float32,indexZ,indexX,indexY)
+        PVyBTxy = zeros(Float64,indexZ,indexX,indexY)
 
         indexZ = nwf.BDnvy[1] - nwf.nvy[1]
         indexX = nwf.BDnvy[2]
         indexY = nwf.BDnvy[3]
-        PVyBTyz = zeros(Float32,indexZ,indexX,indexY)
+        PVyBTyz = zeros(Float64,indexZ,indexX,indexY)
 
-        indexZ = nwf.BDnvx[1]
-        indexX = nwf.BDnvx[2]
-        indexY = nwf.BDnvx[3] - nwf.nvx[3]
-        PVyBTyy = zeros(Float32,indexZ,indexX,indexY)
+        indexZ = nwf.BDnvy[1]
+        indexX = nwf.BDnvy[2]
+        indexY = nwf.BDnvy[3] - nwf.nvy[3]
+        PVyBTyy = zeros(Float64,indexZ,indexX,indexY)
 
         # Vz
         indexZ = nwf.BDnvz[1] - nwf.nvz[1]
         indexX = nwf.BDnvz[2]
         indexY = nwf.BDnvz[3]
-        PVzBTzz = zeros(Float32,indexZ,indexX,indexY)
+        PVzBTzz = zeros(Float64,indexZ,indexX,indexY)
 
         indexZ = nwf.BDnvz[1]
         indexX = nwf.BDnvz[2] - nwf.nvz[2]
         indexY = nwf.BDnvz[3]
-        PVzBTxz = zeros(Float32,indexZ,indexX,indexY)
+        PVzBTxz = zeros(Float64,indexZ,indexX,indexY)
 
         indexZ = nwf.BDnvz[1]
         indexX = nwf.BDnvz[2]
         indexY = nwf.BDnvz[3] - nwf.nvz[3]
-        PVzBTyz = zeros(Float32,indexZ,indexX,indexY)
-
+        PVzBTyz = zeros(Float64,indexZ,indexX,indexY)
 
         # Tzz & Txx & Tyy
         indexZ = nwf.BDntpp[1] - nwf.ntpp[1]
         indexX = nwf.BDntpp[2]
         indexY = nwf.BDntpp[3]
-        PTzzBVz = zeros(Float32,indexZ,indexX,indexY)
-        PTxxBVz = zeros(Float32,indexZ,indexX,indexY)
-        PTyyBVz = zeros(Float32,indexZ,indexX,indexY)
+        PTzzBVz = zeros(Float64,indexZ,indexX,indexY)
+        PTxxBVz = zeros(Float64,indexZ,indexX,indexY)
+        PTyyBVz = zeros(Float64,indexZ,indexX,indexY)
 
         indexZ = nwf.BDntpp[1]
         indexX = nwf.BDntpp[2] - nwf.ntpp[2]
         indexY = nwf.BDntpp[3]
-        PTzzBVx = zeros(Float32,indexZ,indexX,indexY)
-        PTxxBVx = zeros(Float32,indexZ,indexX,indexY)
-        PTyyBVx = zeros(Float32,indexZ,indexX,indexY)
+        PTzzBVx = zeros(Float64,indexZ,indexX,indexY)
+        PTxxBVx = zeros(Float64,indexZ,indexX,indexY)
+        PTyyBVx = zeros(Float64,indexZ,indexX,indexY)
 
         indexZ = nwf.BDntpp[1]
         indexX = nwf.BDntpp[2]
         indexY = nwf.BDntpp[3] - nwf.ntpp[3]
-        PTzzBVy = zeros(Float32,indexZ,indexX,indexY)
-        PTxxBVy = zeros(Float32,indexZ,indexX,indexY)
-        PTyyBVy = zeros(Float32,indexZ,indexX,indexY)
+        PTzzBVy = zeros(Float64,indexZ,indexX,indexY)
+        PTxxBVy = zeros(Float64,indexZ,indexX,indexY)
+        PTyyBVy = zeros(Float64,indexZ,indexX,indexY)
 
         # Txz
         indexZ = nwf.BDntxz[1] - nwf.ntxz[1]
         indexX = nwf.BDntxz[2]
         indexY = nwf.BDntxz[3]
-        PTxzBVx = zeros(Float32,indexZ,indexX,indexY)
+        PTxzBVx = zeros(Float64,indexZ,indexX,indexY)
 
         indexZ = nwf.BDntxz[1]
         indexX = nwf.BDntxz[2] - nwf.ntxz[2]
         indexY = nwf.BDntxz[3]
-        PTxzBVz = zeros(Float32,indexZ,indexX,indexY)
+        PTxzBVz = zeros(Float64,indexZ,indexX,indexY)
 
         # Tyz
         indexZ = nwf.BDntyz[1] - nwf.ntyz[1]
         indexX = nwf.BDntyz[2]
         indexY = nwf.BDntyz[3]
-        PTyzBVy = zeros(Float32,indexZ,indexX,indexY)
+        PTyzBVy = zeros(Float64,indexZ,indexX,indexY)
 
         indexZ = nwf.BDntyz[1]
         indexX = nwf.BDntyz[2]
         indexY = nwf.BDntyz[3] - nwf.ntyz[3]
-        PTyzBVz = zeros(Float32,indexZ,indexX,indexY)
+        PTyzBVz = zeros(Float64,indexZ,indexX,indexY)
 
         # Txy
         indexZ = nwf.BDntxy[1]
         indexX = nwf.BDntxy[2] - nwf.ntxy[2]
         indexY = nwf.BDntxy[3]
-        PTxyBVy = zeros(Float32,indexZ,indexX,indexY)
+        PTxyBVy = zeros(Float64,indexZ,indexX,indexY)
 
         indexZ = nwf.BDntxy[1]
         indexX = nwf.BDntxy[2]
         indexY = nwf.BDntxy[3] - nwf.ntxy[3]
-        PTxyBVx = zeros(Float32,indexZ,indexX,indexY)
+        PTxyBVx = zeros(Float64,indexZ,indexX,indexY)
 
-    return elbd3d(dpcf.bfull,dpcf.bhalf,dpcf.afull,dpcf.ahalf,
+    return elbd3d(Float64.(dpcf.bfull),Float64.(dpcf.bhalf),
+    Float64.(dpcf.afull),Float64.(dpcf.ahalf),
                   PVzBTzz, PVzBTxz, PVzBTyz,
                   PVxBTxx, PVxBTxz, PVxBTxy,
                   PVyBTyy, PVyBTyz, PVyBTxy,
@@ -266,47 +263,39 @@ function BD(nwf::nacwf3d, medium::acoustic3d)
 
     # Vx
     indexZ = nwf.BDnvx[1]
-    indexX = nwf.BDnvx[2] - nwf.BDnvx[2]
+    indexX = nwf.BDnvx[2] - nwf.nvx[2]
     indexY = nwf.BDnvx[3]
-    PVxBTxx = zeros(Float32,indexZ,indexX,indexY)
+    PVxBTpp = zeros(Float64,indexZ,indexX,indexY)
 
     # Vy
-    indexZ = nwf.BDnvx[1]
-    indexX = nwf.BDnvx[2]
-    indexY = nwf.BDnvx[3] - nwf.nvx[3]
-    PVyBTyy = zeros(Float32,indexZ,indexX,indexY)
+    indexZ = nwf.BDnvy[1]
+    indexX = nwf.BDnvy[2]
+    indexY = nwf.BDnvy[3] - nwf.nvy[3]
+    PVyBTpp = zeros(Float64,indexZ,indexX,indexY)
 
     # Vz
     indexZ = nwf.BDnvz[1] - nwf.nvz[1]
     indexX = nwf.BDnvz[2]
     indexY = nwf.BDnvz[3]
-    PVzBTzz = zeros(Float32,indexZ,indexX,indexY)
+    PVzBTpp = zeros(Float64,indexZ,indexX,indexY)
 
     # Tzz & Txx & Tyy
     indexZ = nwf.BDntpp[1] - nwf.ntpp[1]
     indexX = nwf.BDntpp[2]
     indexY = nwf.BDntpp[3]
-    PTzzBVz = zeros(Float32,indexZ,indexX,indexY)
-    PTxxBVz = zeros(Float32,indexZ,indexX,indexY)
-    PTyyBVz = zeros(Float32,indexZ,indexX,indexY)
+    PTppBVz = zeros(Float64,indexZ,indexX,indexY)
 
     indexZ = nwf.BDntpp[1]
     indexX = nwf.BDntpp[2] - nwf.ntpp[2]
     indexY = nwf.BDntpp[3]
-    PTzzBVx = zeros(Float32,indexZ,indexX,indexY)
-    PTxxBVx = zeros(Float32,indexZ,indexX,indexY)
-    PTyyBVx = zeros(Float32,indexZ,indexX,indexY)
+    PTppBVx = zeros(Float64,indexZ,indexX,indexY)
 
     indexZ = nwf.BDntpp[1]
     indexX = nwf.BDntpp[2]
     indexY = nwf.BDntpp[3] - nwf.ntpp[3]
-    PTzzBVy = zeros(Float32,indexZ,indexX,indexY)
-    PTxxBVy = zeros(Float32,indexZ,indexX,indexY)
-    PTyyBVy = zeros(Float32,indexZ,indexX,indexY)
+    PTppBVy = zeros(Float64,indexZ,indexX,indexY)
 
     return acbd3d(dpcf.bfull,dpcf.bhalf,dpcf.afull,dpcf.ahalf,
-                  PVzBTzz, PVxBTxx, PVyBTyy,
-                  PTzzBVz, PTzzBVx, PTzzBVy,
-                  PTxxBVz, PTxxBVx, PTxxBVy,
-                  PTyyBVz, PTyyBVx, PTyyBVy)
+                  PVzBTpp, PVxBTpp, PVyBTpp,
+                  PTppBVz, PTppBVx, PTppBVy)
 end

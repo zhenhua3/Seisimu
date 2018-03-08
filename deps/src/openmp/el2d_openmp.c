@@ -1,7 +1,7 @@
 #include<stdio.h>
 
 // vx
-void el2dopmp(double *vx, double *tmp_vx,  int nvx1, int nvx2, double *rho_vx, double *pvxbtxx, double *pvxbtxz,
+void el2d_openmp(double *vx, double *tmp_vx,  int nvx1, int nvx2, double *rho_vx, double *pvxbtxx, double *pvxbtxz,
   double *vz, double *tmp_vz,  int nvz1, int nvz2, double *rho_vz, double *pvzbtzz, double *pvzbtxz,
   double *txx, double *tzz, double *tmp_tpp, int ntpp1, int ntpp2, double *lamu, double *lambda, double *mu,
   double *ptxxbvx, double *ptxxbvz, double *ptzzbvx, double *ptzzbvz,

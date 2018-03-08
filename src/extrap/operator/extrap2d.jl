@@ -1,6 +1,6 @@
 function extrap2d!(model::elmod2d)
 
-    path="/home/zhenhua3/Dropbox/Zhenhua/Ongoing/Seisimu/deps/builds/extrap2d"
+    path="/home/zhenhua3/Dropbox/Zhenhua/Ongoing/Seisimu/deps/builds/extrap2d_para"
     ccall((:el2dopmp,path),
     Void,
     (Ptr{Cdouble}, Ptr{Cdouble}, Cint, Cint, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble},
@@ -22,7 +22,7 @@ end
 
 function extrap2d!(model::acmod2d)
 
-    path="/home/zhenhua3/Dropbox/Zhenhua/Ongoing/Seisimu/deps/builds/extrap2d"
+    path="/home/zhenhua3/Dropbox/Zhenhua/Ongoing/Seisimu/deps/builds/extrap2d_para"
     ccall((:ac2dopmp,path),
     Void,
     (Ptr{Cdouble}, Ptr{Cdouble}, Cint, Cint, Ptr{Cdouble}, Ptr{Cdouble},

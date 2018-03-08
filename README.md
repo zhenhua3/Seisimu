@@ -13,7 +13,9 @@ Then when you can start use the package by typing "using seisimu" in julia pearl
 
 model = initmodel([Args]; [Optional Args])
 
-Args in order: (1) P velocity, S velocity: 1D or text/bin file (m/s)
+Args in order:
+
+               (1) P velocity, S velocity: 1D or text/bin file (m/s)
 
                (2) Density: Single value (kg/m3)
 
@@ -23,7 +25,9 @@ Args in order: (1) P velocity, S velocity: 1D or text/bin file (m/s)
 
                (5) Simulation time: Single value (s)
 
-Optional Args: (6) PML boundary extension: [ext] = 5, 10, 20
+Optional Args:
+
+               (6) PML boundary extension: [ext] = 5, 10, 20
 
                (7) Surface type: [iflag] = 1: free surface / 2: unlimited medium
 
@@ -39,7 +43,9 @@ Note: Words in square brackets of optional args are the key words when called, s
 
 source = initsource([Args])
 
-Args in order: (1) Number of sources: Single value
+Args in order:
+
+               (1) Number of sources: Single value
 
                (2) 2D Array of the source locations: [z x]: 2D / [z x y]: 3D, coordinates are in columns
 

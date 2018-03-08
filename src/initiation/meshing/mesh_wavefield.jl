@@ -3,25 +3,17 @@
 function initelwf(nDZ::Int64, nHX::Int64, ext::Int64, iflag::Int64)
 
         if iflag == 1 # free surface
-                return elwf2d(zeros(Float64,(nDZ+ext),(nHX+2*ext)),
-                              zeros(Float64,(nDZ+ext),(nHX+2*ext)),
-                              zeros(Float64,(nDZ-1+ext),(nHX-1+2*ext)),
-                              zeros(Float64,(nDZ+ext),(nHX-1+2*ext)),
+                return elwf2d(zeros(Float64,(nDZ+ext),(nHX-1+2*ext)),
                               zeros(Float64,(nDZ-1+ext),(nHX+2*ext)),
                               zeros(Float64,(nDZ+ext),(nHX+2*ext)),
-                              zeros(Float64,(nDZ-1+ext),(nHX-1+2*ext)),
-                              zeros(Float64,(nDZ+ext),(nHX-1+2*ext)),
-                              zeros(Float64,(nDZ-1+ext),(nHX+2*ext)))
+                              zeros(Float64,(nDZ+ext),(nHX+2*ext)),
+                              zeros(Float64,(nDZ-1+ext),(nHX-1+2*ext)))
         elseif iflag == 2 # unlimited medium
-                return elwf2d(zeros(Float64,(nDZ+2*ext),(nHX+2*ext)),
-                              zeros(Float64,(nDZ+2*ext),(nHX+2*ext)),
-                              zeros(Float64,(nDZ-1+2*ext),(nHX-1+2*ext)),
-                              zeros(Float64,(nDZ+2*ext),(nHX-1+2*ext)),
+                return elwf2d(zeros(Float64,(nDZ+2*ext),(nHX-1+2*ext)),
                               zeros(Float64,(nDZ-1+2*ext),(nHX+2*ext)),
                               zeros(Float64,(nDZ+2*ext),(nHX+2*ext)),
-                              zeros(Float64,(nDZ-1+2*ext),(nHX-1+2*ext)),
-                              zeros(Float64,(nDZ+2*ext),(nHX-1+2*ext)),
-                              zeros(Float64,(nDZ-1+2*ext),(nHX+2*ext)))
+                              zeros(Float64,(nDZ+2*ext),(nHX+2*ext)),
+                              zeros(Float64,(nDZ-1+2*ext),(nHX-1+2*ext)))
         else error("Please choose from 1 or 2. 1: free surface; 2: unlimited medium")
         end
 end
@@ -34,22 +26,14 @@ function initacwf(nDZ::Int64, nHX::Int64, ext::Int64, iflag::Int64)
 
         if iflag == 1 # free surface
                 return acwf2d(
-                        zeros(Float64,(nDZ+ext),(nHX+2*ext)),
-                        zeros(Float64,(nDZ+ext),(nHX+2*ext)),
                         zeros(Float64,(nDZ+ext),(nHX-1+2*ext)),
                         zeros(Float64,(nDZ-1+ext),(nHX+2*ext)),
-                        zeros(Float64,(nDZ+ext),(nHX+2*ext)),
-                        zeros(Float64,(nDZ+ext),(nHX-1+2*ext)),
-                        zeros(Float64,(nDZ-1+ext),(nHX+2*ext)))
+                        zeros(Float64,(nDZ+ext),(nHX+2*ext)))
         elseif iflag == 2 # unlimited medium
                 return acwf2d(
-                        zeros(Float64,(nDZ+2*ext),(nHX+2*ext)),
-                        zeros(Float64,(nDZ+2*ext),(nHX+2*ext)),
                         zeros(Float64,(nDZ+2*ext),(nHX-1+2*ext)),
                         zeros(Float64,(nDZ-1+2*ext),(nHX+2*ext)),
-                        zeros(Float64,(nDZ+2*ext),(nHX+2*ext)),
-                        zeros(Float64,(nDZ+2*ext),(nHX-1+2*ext)),
-                        zeros(Float64,(nDZ-1+2*ext),(nHX+2*ext)))
+                        zeros(Float64,(nDZ+2*ext),(nHX+2*ext)))
         else error("Please choose from 1 or 2. 1: free surface; 2: unlimited medium")
         end
 end
@@ -59,25 +43,25 @@ end
 function initelwf(nDZ::Int64, nHX::Int64, nHY::Int64, ext::Int64, iflag::Int64)
 
         if iflag == 1 # free surface
-                return elwf3d(SharedArray{Float32,3}((nDZ-1+ext),(nHX+2*ext),(nHY+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+ext),(nHX-1+2*ext),(nHY+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+ext),(nHX+2*ext),(nHY-1+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+ext),(nHX+2*ext),(nHY+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+ext),(nHX+2*ext),(nHY+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+ext),(nHX+2*ext),(nHY+2*ext)),
-                                 SharedArray{Float32,3}((nDZ-1+ext),(nHX-1+2*ext),(nHY+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+ext),(nHX-1+2*ext),(nHY-1+2*ext)),
-                                 SharedArray{Float32,3}((nDZ-1+ext),(nHX+2*ext),(nHY-1+2*ext)))
+                return elwf3d(zeros(Float64,(nDZ+ext),(nHX-1+2*ext),(nHY+2*ext)),
+                                 zeros(Float64,(nDZ+ext),(nHX+2*ext),(nHY-1+2*ext)),
+                                 zeros(Float64,(nDZ-1+ext),(nHX+2*ext),(nHY+2*ext)),
+                                 zeros(Float64,(nDZ+ext),(nHX+2*ext),(nHY+2*ext)),
+                                 zeros(Float64,(nDZ+ext),(nHX+2*ext),(nHY+2*ext)),
+                                 zeros(Float64,(nDZ+ext),(nHX+2*ext),(nHY+2*ext)),
+                                 zeros(Float64,(nDZ-1+ext),(nHX-1+2*ext),(nHY+2*ext)),
+                                 zeros(Float64,(nDZ-1+ext),(nHX+2*ext),(nHY-1+2*ext)),
+                                 zeros(Float64,(nDZ+ext),(nHX-1+2*ext),(nHY-1+2*ext)))
         elseif iflag == 2 # unlimited medium
-                return elwf3d(SharedArray{Float32,3}((nDZ-1+2*ext),(nHX+2*ext),(nHY+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+2*ext),(nHX-1+2*ext),(nHY+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+2*ext),(nHX+2*ext),(nHY-1+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+2*ext),(nHX+2*ext),(nHY+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+2*ext),(nHX+2*ext),(nHY+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+2*ext),(nHX+2*ext),(nHY+2*ext)),
-                                 SharedArray{Float32,3}((nDZ-1+2*ext),(nHX-1+2*ext),(nHY+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+2*ext),(nHX-1+2*ext),(nHY-1+2*ext)),
-                                 SharedArray{Float32,3}((nDZ-1+2*ext),(nHX+2*ext),(nHY-1+2*ext)))
+                return elwf3d(zeros(Float64,(nDZ+2*ext),(nHX-1+2*ext),(nHY+2*ext)),
+                                 zeros(Float64,(nDZ+2*ext),(nHX+2*ext),(nHY-1+2*ext)),
+                                 zeros(Float64,(nDZ-1+2*ext),(nHX+2*ext),(nHY+2*ext)),
+                                 zeros(Float64,(nDZ+2*ext),(nHX+2*ext),(nHY+2*ext)),
+                                 zeros(Float64,(nDZ+2*ext),(nHX+2*ext),(nHY+2*ext)),
+                                 zeros(Float64,(nDZ+2*ext),(nHX+2*ext),(nHY+2*ext)),
+                                 zeros(Float64,(nDZ-1+2*ext),(nHX-1+2*ext),(nHY+2*ext)),
+                                 zeros(Float64,(nDZ-1+2*ext),(nHX+2*ext),(nHY-1+2*ext)),
+                                 zeros(Float64,(nDZ+2*ext),(nHX-1+2*ext),(nHY-1+2*ext)))
         else error("Please choose from 1 or 2. 1: free surface; 2: unlimited medium")
         end
 end
@@ -95,20 +79,16 @@ function initacwf(nDZ::Int64, nHX::Int64, nHY::Int64, ext::Int64, iflag::Int64)
     # It works for 2D cases
 
         if iflag == 1 # free surface
-                return acwf3d(SharedArray{Float32,3}((nDZ-1+ext),(nHX+2*ext),(nHY+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+ext),(nHX-1+2*ext),(nHY+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+ext),(nHX+2*ext),(nHY-1+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+ext),(nHX+2*ext),(nHY+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+ext),(nHX+2*ext),(nHY+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+ext),(nHX+2*ext),(nHY+2*ext)))
+                return acwf3d(zeros(Float64,(nDZ+ext),(nHX-1+2*ext),(nHY+2*ext)),
+                                 zeros(Float64,(nDZ+ext),(nHX+2*ext),(nHY-1+2*ext)),
+                                 zeros(Float64,(nDZ-1+ext),(nHX+2*ext),(nHY+2*ext)),
+                                 zeros(Float64,(nDZ+ext),(nHX+2*ext),(nHY+2*ext)))
         elseif iflag == 2 # unlimited medium
 
-                return acwf3d(SharedArray{Float32,3}((nDZ-1+2*ext),(nHX+2*ext),(nHY+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+2*ext),(nHX-1+2*ext),(nHY+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+2*ext),(nHX+2*ext),(nHY-1+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+2*ext),(nHX+2*ext),(nHY+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+2*ext),(nHX+2*ext),(nHY+2*ext)),
-                                 SharedArray{Float32,3}((nDZ+2*ext),(nHX+2*ext),(nHY+2*ext)))
+                return acwf3d(zeros(Float64,(nDZ+2*ext),(nHX-1+2*ext),(nHY+2*ext)),
+                                 zeros(Float64,(nDZ+2*ext),(nHX+2*ext),(nHY-1+2*ext)),
+                                 zeros(Float64,(nDZ-1+2*ext),(nHX+2*ext),(nHY+2*ext)),
+                                 zeros(Float64,(nDZ+2*ext),(nHX+2*ext),(nHY+2*ext)))
 
         else error("Please choose from 1 or 2. 1: free surface; 2: unlimited medium")
         end

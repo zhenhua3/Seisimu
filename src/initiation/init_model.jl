@@ -1,7 +1,7 @@
-#=== elastic medium 2d ===#
+# #=== elastic medium 2d ===#
 function initmodel{T1,T2,T3,T4<:Real}(
     pvel::Union{String,<:Real,Array{<:Real,1},StepRange{Int64,Int64},UnitRange{Int64},StepRangeLen{Float32,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}},
-    svel::Union{Void,String,<:Real,Array{<:Real,1},StepRange{Int64,Int64},UnitRange{Int64},StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}},
+    svel::Union{Void,String,Array{<:Real,1},StepRange{Int64,Int64},UnitRange{Int64},StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}},
     rho::T1,
     DZ::Union{<:Real,Array{<:Real,1},StepRange{Int64,Int64},UnitRange{Int64},StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}},
     HX::T2,
@@ -20,8 +20,8 @@ function initmodel{T1,T2,T3,T4<:Real}(
 # = unsplit PML boundary = #
     wf = initelwf(medium.nDZ, medium.nHX, ext, iflag)
     pml = BD(nwf, medium)
-    calpara = wfpara(medium)
-    return elmod2d(medium, wf, nwf, FDC, pml, calpara)
+    # calpara = wfpara(medium)
+    return elmod2d(medium, wf, nwf, FDC, pml)#, calpara)
 end
 
 
@@ -46,8 +46,8 @@ function initmodel{T1,T2,T3,T4<:Real}(
 # = unsplit PML boundary = #
     wf = initacwf(medium.nDZ, medium.nHX, ext, iflag)
     pml = BD(nwf, medium)
-    calpara = wfpara(medium)
-    return acmod2d(medium, wf, nwf, FDC, pml, calpara)
+    # calpara = wfpara(medium)
+    return acmod2d(medium, wf, nwf, FDC, pml)#, calpara)
 end
 
 
@@ -79,8 +79,8 @@ function initmodel{T1,T2,T3,T4,T5<:Real}(
 # = unsplit PML boundary = #
     wf = initelwf(medium.nDZ, medium.nHX, medium.nHY, ext, iflag)
     pml = BD(nwf, medium)
-    calpara = wfpara(medium)
-    return elmod3d(medium, wf, nwf, FDC, pml, calpara)
+    # calpara = wfpara(medium)
+    return elmod3d(medium, wf, nwf, FDC, pml)#, calpara)
 end
 
 
@@ -112,6 +112,6 @@ function initmodel{T1,T2,T3,T4,T5<:Real}(
 # = unsplit PML boundary = #
     wf = initacwf(medium.nDZ, medium.nHX, medium.nHY, ext, iflag)
     pml = BD(nwf, medium)
-    calpara = wfpara(medium)
-    return acmod3d(medium, wf, nwf, FDC, pml, calpara)
+    # calpara = wfpara(medium)
+    return acmod3d(medium, wf, nwf, FDC, pml)#, calpara)
 end

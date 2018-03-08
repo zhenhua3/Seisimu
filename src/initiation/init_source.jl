@@ -92,8 +92,8 @@ function CreateSource{T1,T2,T3<:Real}(
         error("Six elements in 3d moment tensor (mxx, myy, mzz, mxy, mxz, myz)")
       end
 
-      nloc = [Int64(round(loc[1]/medium.dz)),  Int64(round(loc[2]/medium.dx)),  Int64(round(loc[3]/medium.dy))]
-      BDnloc = SourType(medium.ext, nloc[1], nloc[2], nloc[3], medium.iflag)
+      nloc = [Int64(round(loc[1]/medium.dz)),  Int64(round(loc[2]/medium.dx)), Int64(round(loc[3]/medium.dy))]
+      BDnloc = BDnlocation(medium.ext, nloc[1], nloc[2], nloc[3], medium.iflag)
       otinput = ot
       not = Int64(round(otinput/medium.dt))
       SourceWaveform = CreateWaveform(1, not, medium.nT, waveform)
@@ -104,7 +104,7 @@ function CreateSource{T1,T2,T3<:Real}(
 
 
 #=== source ===#
-function initsource{T1,T2, T3<:Real}(
+function initsource{T1,T2,T3<:Real}(
     sn::Int64,
     loc::Array{T1}, # location
     ot::Union{T2,Array{T2}}, # origin time
@@ -121,16 +121,16 @@ function initsource{T1,T2, T3<:Real}(
         waveform[:,i],
         model.medium,
         model.nwf)
-    end
+      end
     return sou
 end
 
 
-function initsource{T1,T2, T3<:Real}(
+function initsource{T1,T2,T3<:Real}(
     sn::Int64,
     loc::Array{T1}, # location
     ot::Union{T2,Array{T2}}, # origin time
-    mt:: Array{T3}, # type
+    mt::Array{T3}, # type
     waveform::Array{Float64},
     model::Union{elmod3d,acmod3d})
 

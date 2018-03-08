@@ -3,10 +3,10 @@ using seisimu
 vp = [5000.0]
 vs = [3500.0]
 rho = 2.8
-depth = 10000
-Horizon = 10000
+depth = 6000
+Horizon = 6000
 pkf = 30
-T = 7
+T = 2
 ext = 10
 iflag = 2
 dx = nothing
@@ -14,10 +14,10 @@ dz = nothing
 dt = nothing
 nT = nothing
 
-model = initmodel(vp,vs,rho,depth,Horizon,pkf,T)
+model = initmodel(vp,rho,depth,Horizon,pkf,T)
 
 sn = 1
-loc = [5000 5000]
+loc = [2500 2500]
 ot = [0.001]
 mt = [1 5 1]
 wavelet = Ricker(pkf,model.medium.dt)
