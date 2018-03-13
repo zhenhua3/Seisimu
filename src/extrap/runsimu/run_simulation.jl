@@ -17,7 +17,7 @@ function runsimu(model::Union{elmod2d,acmod2d},
     if rec == nothing && Slices == nothing
         for it = 1:model.medium.nT
             addsou!(model.wf, sou, it)
-            extrap2d!(model)
+            run!(model)
         end
 
 #=== Output Recordings only ===#

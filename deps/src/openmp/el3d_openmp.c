@@ -1,5 +1,5 @@
 #include<stdio.h>
-#include"fd_body_bound_openmp.c"
+#include"3d_lib.c"
 
 // vx
 void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
@@ -30,21 +30,21 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
     {
       // vxbtxx
       #pragma omp for collapse(2) private(j)
-      for(k=0; k<BD_ny_vx; k++)
+      for(k=2; k<BD_ny_vx-2; k++)
       {
-        for(i=0; i<BD_nz_vx; i++)
+        for(i=2; i<BD_nz_vx-2; i++)
         {
           for(j=1; j<ext; j++)
           {
-            bound_x(vx, BD_nz_vx, BD_nx_vx, BD_ny_vx, i, j, k,
+            bound_x_3d(vx, BD_nz_vx, BD_nx_vx, BD_ny_vx, i, j, k,
               txx, BD_nz_tpp, BD_nx_tpp, 1,
             2.0/(*(rho+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+i+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)),
             2.0/(*(rho+i+(BD_nx_vx-1-j)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+i+(BD_nx_vx-j)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)),
             dx, dt, pvxbtxx, bhalf, ahalf, ext, fdc);
           }
-          for(j=ext; j<BD_nx_vx-1-ext; j++)
+          for(j=ext; j<BD_nx_vx-ext; j++)
           {
-            body_x(vx, BD_nz_vx, BD_nx_vx, BD_ny_vx, i, j, k,
+            body_x_3d(vx, BD_nz_vx, BD_nx_vx, BD_ny_vx, i, j, k,
               txx, BD_nz_tpp, BD_nx_tpp, 1,
             2.0/(*(rho+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+i+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)),
             dx, dt, fdc);
@@ -53,21 +53,21 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
       }
       // vybtxy
       #pragma omp for collapse(2) private(j)
-      for(k=0; k<BD_ny_vy; k++)
+      for(k=1; k<BD_ny_vy-1; k++)
       {
-        for(i=0; i<BD_nz_vy; i++)
+        for(i=2; i<BD_nz_vy-2; i++)
         {
           for(j=2; j<ext; j++)
           {
-            bound_x(vy, BD_nz_vy, BD_nx_vy, BD_ny_vy, i, j, k,
+            bound_x_3d(vy, BD_nz_vy, BD_nx_vy, BD_ny_vy, i, j, k,
               txy, BD_nz_txy, BD_nx_txy, 2,
             2.0/(*(rho+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+i+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp)),
             2.0/(*(rho+i+(BD_nx_vy-1-j)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+i+(BD_nx_vy-1-j)*BD_nz_tpp+(BD_ny_vy-k)*BD_nz_tpp*BD_nx_tpp)),
             dx, dt, pvybtxy, bfull, afull, ext, fdc);
           }
-          for(j=ext; j<BD_nx_vy-2-ext; j++)
+          for(j=ext; j<BD_nx_vy-ext; j++)
           {
-            body_x(vy, BD_nz_vy, BD_nx_vy, BD_ny_vy, i, j, k,
+            body_x_3d(vy, BD_nz_vy, BD_nx_vy, BD_ny_vy, i, j, k,
               txy, BD_nz_txy, BD_nx_txy, 2,
             2.0/(*(rho+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+i+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp)),
             dx, dt, fdc);
@@ -82,15 +82,15 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
         {
           for(j=2; j<ext; j++)
           {
-            bound_x(vz, BD_nz_vz, BD_nx_vz, BD_ny_vz, i, j, k,
+            bound_x_3d(vz, BD_nz_vz, BD_nx_vz, BD_ny_vz, i, j, k,
               txz, BD_nz_txz, BD_nx_txz, 2,
             2.0/(*(rho+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+(i+1)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)),
             2.0/(*(rho+i+(BD_nx_vz-1-j)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+(i+1)+(BD_nx_vz-1-j)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)),
             dx,dt, pvzbtxz, bfull, afull, ext, fdc);
           }
-          for(j=ext; j<BD_nx_vz-2-ext; j++)
+          for(j=ext; j<BD_nx_vz-ext; j++)
           {
-            body_x(vz, BD_nz_vz, BD_nx_vz, BD_ny_vz, i, j, k,
+            body_x_3d(vz, BD_nz_vz, BD_nx_vz, BD_ny_vz, i, j, k,
               txz, BD_nz_txz, BD_nx_txz, 2,
             2.0/(*(rho+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+(i+1)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)),
             dx, dt, fdc);
@@ -106,15 +106,15 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
         {
           for(k=2; k<ext; k++)
           {
-            bound_y(vx, BD_nz_vx, BD_nx_vx, BD_ny_vx, i, j, k,
+            bound_y_3d(vx, BD_nz_vx, BD_nx_vx, BD_ny_vx, i, j, k,
               txy, BD_nz_txy, BD_nx_txy, 2,
               2.0/(*(rho+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+i+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)),
               2.0/(*(rho+i+j*BD_nz_tpp+(BD_ny_vx-1-k)*BD_nz_tpp*BD_nx_tpp)+*(rho+i+(j+1)*BD_nz_tpp+(BD_ny_vx-1-k)*BD_nz_tpp*BD_nx_tpp)),
               dy,dt, pvxbtxy, bfull, afull, ext, fdc);
           }
-          for(k=ext; k<BD_ny_vx-2-ext; k++)
+          for(k=ext; k<BD_ny_vx-ext; k++)
           {
-            body_y(vx, BD_nz_vx, BD_nx_vx, BD_ny_vx, i, j, k,
+            body_y_3d(vx, BD_nz_vx, BD_nx_vx, BD_ny_vx, i, j, k,
               txy, BD_nz_txy, BD_nx_txy, 2,
               2.0/(*(rho+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+i+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)),
               dy,dt, fdc);
@@ -129,15 +129,15 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
         {
           for(k=1; k<ext; k++)
           {
-            bound_y(vy, BD_nz_vy, BD_nx_vy, BD_ny_vy, i, j, k,
+            bound_y_3d(vy, BD_nz_vy, BD_nx_vy, BD_ny_vy, i, j, k,
               tyy, BD_nz_tpp, BD_nx_tpp, 1,
               2.0/(*(rho+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+i+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp)),
               2.0/(*(rho+i+j*BD_nz_tpp+(BD_ny_vy-1-k)*BD_nz_tpp*BD_nx_tpp)+*(rho+i+j*BD_nz_tpp+(BD_ny_vy-k)*BD_nz_tpp*BD_nx_tpp)),
               dy,dt, pvybtyy, bhalf, ahalf, ext, fdc);
           }
-          for(k=ext; k<BD_ny_vy-1-ext; k++)
+          for(k=ext; k<BD_ny_vy-ext; k++)
           {
-            body_y(vy, BD_nz_vy, BD_nx_vy, BD_ny_vy, i, j, k,
+            body_y_3d(vy, BD_nz_vy, BD_nx_vy, BD_ny_vy, i, j, k,
               tyy, BD_nz_tpp, BD_nx_tpp, 1,
               2.0/(*(rho+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+i+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp)),
               dy,dt, fdc);
@@ -152,15 +152,15 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
         {
           for(k=2; k<ext; k++)
           {
-            bound_y(vz, BD_nz_vz, BD_nx_vz, BD_ny_vz, i, j, k,
+            bound_y_3d(vz, BD_nz_vz, BD_nx_vz, BD_ny_vz, i, j, k,
               tyz, BD_nz_tyz, BD_nx_tyz, 2,
               2.0/(*(rho+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+(i+1)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)),
               2.0/(*(rho+i+j*BD_nz_tpp+(BD_ny_vz-1-k)*BD_nz_tpp*BD_nx_tpp)+*(rho+(i+1)+j*BD_nz_tpp+(BD_ny_vz-1-k)*BD_nz_tpp*BD_nx_tpp)),
               dy,dt, pvzbtyz, bfull, afull, ext, fdc);
           }
-          for(k=ext; k<BD_ny_vz-2-ext; k++)
+          for(k=ext; k<BD_ny_vz-ext; k++)
           {
-            body_y(vz, BD_nz_vz, BD_nx_vz, BD_ny_vz, i, j, k,
+            body_y_3d(vz, BD_nz_vz, BD_nx_vz, BD_ny_vz, i, j, k,
               tyz, BD_nz_tyz, BD_nx_tyz, 2,
             2.0/(*(rho+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+(i+1)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)),
             dy,dt, fdc);
@@ -171,21 +171,21 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
     //********************* V_Z *********************//
       // vxbtxz
       #pragma omp for collapse(2) private(i)
-      for(j=0; j<BD_nx_vx; j++)
+      for(j=1; j<BD_nx_vx-1; j++)
       {
-        for(k=0; k<BD_ny_vx; k++)
+        for(k=2; k<BD_ny_vx-2; k++)
         {
           for(i=2; i<ext; i++)
           {
-            unlimited_bound_z(vx, BD_nz_vx, BD_nx_vx, BD_ny_vx, i, j, k,
+            unlimited_bound_z_3d(vx, BD_nz_vx, BD_nx_vx, BD_ny_vx, i, j, k,
               txz, BD_nz_txz, BD_nx_txz, 2,
             2.0/(*(rho+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+i+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)),
             2.0/(*(rho+(BD_nz_vx-1-i)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+(BD_nz_vx-1-i)+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)),
             dz,dt, pvxbtxz, bfull, afull, ext, fdc);
           }
-          for(i=ext; i<BD_nz_vx-2-ext; i++)
+          for(i=ext; i<BD_nz_vx-ext; i++)
           {
-            body_z(vx, BD_nz_vx, BD_nx_vx, BD_ny_vx, i, j, k,
+            body_z_3d(vx, BD_nz_vx, BD_nx_vx, BD_ny_vx, i, j, k,
               txz, BD_nz_txz, BD_nx_txz, 2,
               2.0/(*(rho+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+i+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)),
               dz,dt, fdc);
@@ -200,15 +200,15 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
         {
           for(i=2; i<ext; i++)
           {
-            unlimited_bound_z(vy, BD_nz_vy, BD_nx_vy, BD_ny_vy, i, j, k,
+            unlimited_bound_z_3d(vy, BD_nz_vy, BD_nx_vy, BD_ny_vy, i, j, k,
               tyz, BD_nz_tyz, BD_nx_tyz, 2,
               2.0/(*(rho+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+i+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp)),
               2.0/(*(rho+(BD_nz_vy-1-i)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+(BD_nz_vy-1-i)+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp)),
               dz,dt, pvybtyz, bfull, afull, ext, fdc);
           }
-          for(i=ext; i<BD_nz_vy-2-ext; i++)
+          for(i=ext; i<BD_nz_vy-ext; i++)
           {
-            body_z(vy, BD_nz_vy, BD_nx_vy, BD_ny_vy, i, j, k,
+            body_z_3d(vy, BD_nz_vy, BD_nx_vy, BD_ny_vy, i, j, k,
               tyz, BD_nz_tyz, BD_nx_tyz, 2,
               2.0/(*(rho+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+i+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp)),
               dz,dt, fdc);
@@ -223,15 +223,15 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
         {
           for(i=1;i<ext;i++)
           {
-            unlimited_bound_z(vz, BD_nz_vz, BD_nx_vz, BD_ny_vz, i, j, k,
+            unlimited_bound_z_3d(vz, BD_nz_vz, BD_nx_vz, BD_ny_vz, i, j, k,
               tzz, BD_nz_tpp, BD_nx_tpp, 1,
               2.0/(*(rho+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+(i+1)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)),
               2.0/(*(rho+(BD_nz_vz-1-i)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+(BD_nz_vz-i)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)),
               dz,dt, pvzbtzz, bhalf, ahalf, ext, fdc);
           }
-          for(i=ext; i<BD_nz_vz-1-ext; i++)
+          for(i=ext; i<BD_nz_vz-ext; i++)
           {
-            body_z(vz, BD_nz_vz, BD_nx_vz, BD_ny_vz, i, j, k,
+            body_z_3d(vz, BD_nz_vz, BD_nx_vz, BD_ny_vz, i, j, k,
               tzz, BD_nz_tpp, BD_nx_tpp, 1,
               2.0/(*(rho+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+(i+1)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)),
               dz,dt, fdc);
@@ -241,41 +241,41 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
 
     //************ T_X ************//
       #pragma omp for collapse(2) private(j)
-      for(k=0; k<BD_ny_tpp; k++)
+      for(k=2; k<BD_ny_tpp-2; k++)
       {
-        for(i=0; i<BD_nz_tpp; i++)
+        for(i=2; i<BD_nz_tpp-2; i++)
         {
           for(j=2; j<ext; j++)
           {
-            bound_tpp_x(txx, tyy, tzz, BD_nz_tpp, BD_nx_tpp, BD_ny_tpp,
+            el_bound_tpp_x_3d(txx, tyy, tzz, BD_nz_tpp, BD_nx_tpp, BD_ny_tpp,
             i, j, k, vx, BD_nz_vx, BD_nx_vx, 2, lambda, mu, dx, dt,
-            ptxxbvx, ptyybvx, ptzzbvx, bhalf, ahalf, ext, fdc);
+            ptxxbvx, ptyybvx, ptzzbvx, bfull, afull, ext, fdc);
           }
-          for(j=ext; j<BD_nx_tpp-1-ext; j++)
+          for(j=ext; j<BD_nx_tpp-ext; j++)
           {
-            body_tpp_x(txx, tyy, tzz, BD_nz_tpp, BD_nx_tpp, BD_ny_tpp,
+            el_body_tpp_x_3d(txx, tyy, tzz, BD_nz_tpp, BD_nx_tpp, BD_ny_tpp,
             i, j, k, vx, BD_nz_vx, BD_nx_vx, 2, lambda, mu, dx, dt, fdc);
           }
         }
       }
       #pragma omp for collapse(2) private(j)
-      for(k=0; k<BD_ny_txy; k++)
+      for(k=1; k<BD_ny_txy-1; k++)
       {
         for(i=0; i<BD_nz_txy; i++)
         {
           for(j=1; j<ext; j++)
           {
-            bound_x(txy, BD_nz_txy, BD_nx_txy, BD_ny_txy, i, j, k,
+            bound_x_3d(txy, BD_nz_txy, BD_nx_txy, BD_ny_txy, i, j, k,
             vy, BD_nz_vy, BD_nx_vy, 1,
             (*(mu+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+i+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)
             + *(mu+i+(j+1)*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp) + *(mu+i+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp))/4,
             (*(mu+i+(BD_nx_txy-1-j)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+i+(BD_nx_txy-j)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)
             + *(mu+i+(BD_nx_txy-j)*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp) + *(mu+i+(BD_nx_txy-1-j)*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp))/4,
-            dx, dt, ptxybvy, bfull, afull, ext, fdc);
+            dx, dt, ptxybvy, bhalf, ahalf, ext, fdc);
           }
-          for(j=ext; j<BD_nx_txy-1-ext; j++)
+          for(j=ext; j<BD_nx_txy-ext; j++)
           {
-            body_x(txy, BD_nz_txy, BD_nx_txy, BD_ny_txy, i, j, k,
+            body_x_3d(txy, BD_nz_txy, BD_nx_txy, BD_ny_txy, i, j, k,
             vy, BD_nz_vy, BD_nx_vy, 1,
             (*(mu+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+i+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)
             + *(mu+i+(j+1)*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp) + *(mu+i+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp))/4,
@@ -290,17 +290,17 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
         {
           for(j=1; j<ext; j++)
           {
-            bound_x(txz, BD_nz_txz, BD_nx_txz, BD_ny_txz, i, j, k,
+            bound_x_3d(txz, BD_nz_txz, BD_nx_txz, BD_ny_txz, i, j, k,
             vz, BD_nz_vz, BD_nx_vz, 1,
             (*(mu+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+i+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)
             + *(mu+(i+1)+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+(i+1)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp))/4,
             (*(mu+i+(BD_nx_txz-1-j)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+i+(BD_nx_txz-j)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)
             + *(mu+(i+1)+(BD_nx_txz-j)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+(i+1)+(BD_nx_txz-1-j)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp))/4,
-            dx, dt, ptxzbvz, bfull, afull, ext, fdc);
+            dx, dt, ptxzbvz, bhalf, ahalf, ext, fdc);
           }
-          for(j=ext; j<BD_nx_txz-1-ext; j++)
+          for(j=ext; j<BD_nx_txz-ext; j++)
           {
-            body_x(txz, BD_nz_txz, BD_nx_txz, BD_ny_txz, i, j, k,
+            body_x_3d(txz, BD_nz_txz, BD_nx_txz, BD_ny_txz, i, j, k,
             vz, BD_nz_vz, BD_nx_vz, 1,
             (*(mu+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+i+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)
             + *(mu+(i+1)+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+(i+1)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp))/4,
@@ -317,13 +317,13 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
         {
           for(k=2; k<ext; k++)
           {
-            bound_tpp_y(txx, tyy, tzz, BD_nz_tpp, BD_nx_tpp, BD_ny_tpp,
+            el_bound_tpp_y_3d(txx, tyy, tzz, BD_nz_tpp, BD_nx_tpp, BD_ny_tpp,
             i, j, k, vy, BD_nz_vy, BD_nx_vy, 2, lambda, mu, dy, dt,
-            ptxxbvy, ptyybvy, ptzzbvy, bhalf, ahalf, ext, fdc);
+            ptxxbvy, ptyybvy, ptzzbvy, bfull, afull, ext, fdc);
           }
-          for(k=ext; k<BD_ny_tpp-1-ext; k++)
+          for(k=ext; k<BD_ny_tpp-ext; k++)
           {
-            body_tpp_y(txx, tyy, tzz, BD_nz_tpp, BD_nx_tpp, BD_ny_tpp,
+            el_body_tpp_y_3d(txx, tyy, tzz, BD_nz_tpp, BD_nx_tpp, BD_ny_tpp,
             i, j, k, vy, BD_nz_vy, BD_nx_vy, 2, lambda, mu, dy, dt, fdc);
           }
         }
@@ -331,21 +331,21 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
       #pragma omp for collapse(2) private(k)
       for(i=0; i<BD_nz_txy; i++)
       {
-        for(j=0; j<BD_nx_txy; j++)
+        for(j=1; j<BD_nx_txy-1; j++)
         {
           for(k=1; k<ext; k++)
           {
-            bound_y(txy, BD_nz_txy, BD_nx_txy, BD_ny_txy, i, j, k,
+            bound_y_3d(txy, BD_nz_txy, BD_nx_txy, BD_ny_txy, i, j, k,
             vx, BD_nz_vx, BD_nx_vx, 1,
             (*(mu+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+i+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)
             + *(mu+i+(j+1)*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp) + *(mu+i+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp))/4,
             (*(mu+i+j*BD_nz_tpp+(BD_ny_txy-k-1)*BD_nz_tpp*BD_nx_tpp) + *(mu+i+(j+1)*BD_nz_tpp+(BD_ny_txy-k-1)*BD_nz_tpp*BD_nx_tpp)
             + *(mu+i+(j+1)*BD_nz_tpp+(BD_ny_txy-k)*BD_nz_tpp*BD_nx_tpp) + *(mu+i+j*BD_nz_tpp+(BD_ny_txy-k)*BD_nz_tpp*BD_nx_tpp))/4,
-            dy, dt, ptxybvx, bfull, afull, ext, fdc);
+            dy, dt, ptxybvx, bhalf, ahalf, ext, fdc);
           }
-          for(k=ext; k<BD_ny_txy-1-ext; k++)
+          for(k=ext; k<BD_ny_txy-ext; k++)
           {
-            body_y(txy, BD_nz_txy, BD_nx_txy, BD_ny_txy, i, j, k,
+            body_y_3d(txy, BD_nz_txy, BD_nx_txy, BD_ny_txy, i, j, k,
             vx, BD_nz_vx, BD_nx_vx, 1,
             (*(mu+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+i+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)
             + *(mu+i+(j+1)*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp) + *(mu+i+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp))/4,
@@ -360,17 +360,17 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
         {
           for(k=1; k<ext; k++)
           {
-            bound_y(tyz, BD_nz_tyz, BD_nx_tyz, BD_ny_tyz, i, j, k,
+            bound_y_3d(tyz, BD_nz_tyz, BD_nx_tyz, BD_ny_tyz, i, j, k,
             vz, BD_nz_vz, BD_nx_vz, 1,
             (*(mu+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+i+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp)
             + *(mu+(i+1)+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp) + *(mu+(i+1)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp))/4,
             (*(mu+i+j*BD_nz_tpp+(BD_ny_tyz-1-k)*BD_nz_tpp*BD_nx_tpp) + *(mu+i+j*BD_nz_tpp+(BD_ny_tyz-k)*BD_nz_tpp*BD_nx_tpp)
             + *(mu+(i+1)+j*BD_nz_tpp+(BD_ny_tyz-k)*BD_nz_tpp*BD_nx_tpp) + *(mu+(i+1)+j*BD_nz_tpp+(BD_ny_tyz-1-k)*BD_nz_tpp*BD_nx_tpp))/4,
-            dy, dt, ptyzbvz, bfull, afull, ext, fdc);
+            dy, dt, ptyzbvz, bhalf, ahalf, ext, fdc);
           }
-          for(k=ext; k<BD_ny_tyz-1-ext; k++)
+          for(k=ext; k<BD_ny_tyz-ext; k++)
           {
-            body_y(tyz, BD_nz_tyz, BD_nx_tyz, BD_ny_tyz, i, j, k,
+            body_y_3d(tyz, BD_nz_tyz, BD_nx_tyz, BD_ny_tyz, i, j, k,
             vz, BD_nz_vz, BD_nx_vz, 1,
             (*(mu+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+i+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp)
             + *(mu+(i+1)+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp) + *(mu+(i+1)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp))/4,
@@ -386,35 +386,35 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
         {
           for(i=2; i<ext; i++)
           {
-            unlimited_bound_tpp_z(txx, tyy, tzz, BD_nz_tpp, BD_nx_tpp, BD_ny_tpp,
+            el_unlimited_bound_tpp_z_3d(txx, tyy, tzz, BD_nz_tpp, BD_nx_tpp, BD_ny_tpp,
             i, j, k, vz, BD_nz_vz, BD_nx_vz, 2, lambda, mu, dz, dt,
-            ptxxbvz, ptyybvz, ptzzbvz, bhalf, ahalf, ext, fdc);
+            ptxxbvz, ptyybvz, ptzzbvz, bfull, afull, ext, fdc);
           }
-          for(i=ext; i<BD_nz_tpp-1-ext; i++)
+          for(i=ext; i<BD_nz_tpp-ext; i++)
           {
-            body_tpp_z(txx, tyy, tzz, BD_nz_tpp, BD_nx_tpp, BD_ny_tpp,
+            el_body_tpp_z_3d(txx, tyy, tzz, BD_nz_tpp, BD_nx_tpp, BD_ny_tpp,
             i, j, k, vz, BD_nz_vz, BD_nx_vz, 2, lambda, mu, dz, dt, fdc);
           }
         }
       }
       #pragma omp for collapse(2) private(i)
-      for(j=0; j<BD_nx_txz; j++)
+      for(j=1; j<BD_nx_txz-1; j++)
       {
         for(k=0; k<BD_ny_txz; k++)
         {
           for(i=1; i<ext; i++)
           {
-            unlimited_bound_z(txz, BD_nz_txz, BD_nx_txz, BD_ny_txz, i, j, k,
+            unlimited_bound_z_3d(txz, BD_nz_txz, BD_nx_txz, BD_ny_txz, i, j, k,
             vx, BD_nz_vx, BD_nx_vx, 1,
             (*(mu+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+i+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)
             + *(mu+(i+1)+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+(i+1)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp))/4,
             (*(mu+(BD_nz_txz-1-i)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+(BD_nz_txz-1-i)+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)
             + *(mu+(BD_nz_txz-i)+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+(BD_nz_txz-i)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp))/4,
-            dz, dt, ptxzbvx, bfull, afull, ext, fdc);
+            dz, dt, ptxzbvx, bhalf, ahalf, ext, fdc);
           }
-          for(i=ext; i<BD_nz_txz-1-ext; i++)
+          for(i=ext; i<BD_nz_txz-ext; i++)
           {
-            body_z(txz, BD_nz_txz, BD_nx_txz, BD_ny_txz, i, j, k,
+            body_z_3d(txz, BD_nz_txz, BD_nx_txz, BD_ny_txz, i, j, k,
             vx, BD_nz_vx, BD_nx_vx, 1,
             (*(mu+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+i+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)
             + *(mu+(i+1)+(j+1)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+(i+1)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp))/4,
@@ -427,19 +427,19 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
       {
         for(k=0; k<BD_ny_tyz; k++)
         {
-          for(i=0; i<ext; i++)
+          for(i=1; i<ext; i++)
           {
-            unlimited_bound_z(tyz, BD_nz_tyz, BD_nx_tyz, BD_ny_tyz, i, j, k,
+            unlimited_bound_z_3d(tyz, BD_nz_tyz, BD_nx_tyz, BD_ny_tyz, i, j, k,
             vy, BD_nz_vy, BD_nx_vy, 1,
             (*(mu+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+i+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp)
             + *(mu+(i+1)+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp) + *(mu+(i+1)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp))/4,
             (*(mu+(BD_nz_tyz-1-i)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+(BD_nz_tyz-1-i)+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp)
             + *(mu+(BD_nz_tyz-i)+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp) + *(mu+(BD_nz_tyz-i)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp))/4,
-            dz, dt, ptyzbvy, bfull, afull, ext, fdc);
+            dz, dt, ptyzbvy, bhalf, ahalf, ext, fdc);
           }
-          for(i=ext; i<BD_nz_tyz-1-ext; i++)
+          for(i=ext; i<BD_nz_tyz-ext; i++)
           {
-            body_z(tyz, BD_nz_tyz, BD_nx_tyz, BD_ny_tyz, i, j, k,
+            body_z_3d(tyz, BD_nz_tyz, BD_nx_tyz, BD_ny_tyz, i, j, k,
             vy, BD_nz_vy, BD_nx_vy, 1,
             (*(mu+i+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp) + *(mu+i+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp)
             + *(mu+(i+1)+j*BD_nz_tpp+(k+1)*BD_nz_tpp*BD_nx_tpp) + *(mu+(i+1)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp))/4,

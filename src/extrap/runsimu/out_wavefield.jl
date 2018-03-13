@@ -11,7 +11,7 @@ function simuwf(
     wIB(fid,model,Slices,OptCpnt)
     for it = 1 : nT
          addsou!(model.wf,sou,it)
-         extrap2d!(model)
+         run!(model)
          wDB(fid,model.wf,OptCpnt,it,Slices)
     end
     close(fid)

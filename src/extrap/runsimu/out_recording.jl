@@ -12,7 +12,7 @@ function simurec(
     wIB(fid,rec,model.medium.nT,OptCpnt)
     for it = 1 : nT
         addsou!(model.wf, sou, it)
-        extrap2d!(model)
+        run!(model)
         wDB(fid,model.wf,rec.BDnloc,model.nwf,OptCpnt)
     end
     close(fid)

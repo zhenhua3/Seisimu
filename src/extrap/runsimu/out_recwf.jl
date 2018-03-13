@@ -17,7 +17,7 @@ function simurecwf(
     wIB(fid_wf,model,Slices,OptCpnt)
     for it = 1 : nT
       addsou!(model.wf, source, it)
-      extrap2d!(model)
+      run!(model)
       wDB(fid_record,fid_wf,model.wf,rec.BDnloc,
           model.nwf,OptCpnt,it,Slices)
     end
