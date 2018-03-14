@@ -1,5 +1,5 @@
 
-function run!{T1<:Real}(model::elmod3d)
+function run!(model::elmod3d)
 
  path="/home/lzh/Dropbox/Zhenhua/Ongoing/MOR/deps/build/el3d_openmp.so"
   ccall((:el3d_openmp,path),

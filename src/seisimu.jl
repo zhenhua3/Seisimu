@@ -4,7 +4,8 @@ module seisimu
     # @pyimport matplotlib.pyplot as plt
 
     include("initiation/initiation.jl")
-    include("extrap/extrap.jl")
+    include("extrap/run_base.jl")
+    include("extrap/run_simulation.jl")
     include("IO/IO.jl")
 
     # GPU part is currently unenabled
@@ -12,6 +13,6 @@ module seisimu
 
     # functions and types
     export initmodel,Ricker,initsource,runsimu,
-    gpuchunk,acmod2d,elmod3d,acmod3d,elmod2d,addsou!,run!
+    acmod2d,elmod3d,acmod3d,elmod2d,addsou!,run!
 
 end
