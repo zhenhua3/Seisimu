@@ -1,9 +1,19 @@
-type source{T1,T2, T3<:Real}
+type MTsource{T1,T2, T3<:Real}
     mt :: Array{T1} # moment tensor
     loc :: Array{T2} # source's physical location in z and x axis
     nloc :: Array{Int64} # source's discrete location in z and x axis without PML boundary
     BDnloc :: Array{Int64} # source's discrete location in z and x axis with PML boundary. It is directly related to source type.
     ot :: T3 # source origin time
+    not :: Int64 # source's discrete origin time
+    waveform :: Array{Float64} # waveform for a single source
+end
+
+type SFsource{T1, T2<:Real}
+    coeff :: Array{Int64} # single force [vx vz] or [vx vy vz]
+    loc :: Array{T1} # source's physical location in z and x axis
+    nloc :: Array{Int64} # source's discrete location in z and x axis without PML boundary
+    BDnloc :: Array{Int64} # source's discrete location in z and x axis with PML boundary. It is directly related to source type.
+    ot :: T2 # source origin time
     not :: Int64 # source's discrete origin time
     waveform :: Array{Float64} # waveform for a single source
 end
@@ -58,7 +68,7 @@ end
 
 
 
-function CreateSource{T1,T2,T3<:Real}(
+function CreateMtSource{T1,T2,T3<:Real}(
     loc :: Array{T1},
     ot :: T2,
     mt :: Array{T3,1}, # moment tensor (mxx,mzz,mxz)
@@ -76,11 +86,11 @@ function CreateSource{T1,T2,T3<:Real}(
     not = Int64(round(otinput/medium.dt))
     SourceWaveform = CreateWaveform(1, not, medium.nT, waveform)
 
-    Sou = source(mt, loc, nloc, BDnloc, otinput, not, SourceWaveform)
+    Sou = MTsource(mt, loc, nloc, BDnloc, otinput, not, SourceWaveform)
   end
 
 
-  function CreateSource{T1,T2,T3<:Real}(
+  function CreateMtSource{T1,T2,T3<:Real}(
       loc::Array{T1},
       ot::T2,
       mt :: Array{T3,1}, # moment tensor (mxx,myy,mzz,mxy,mxz,myz)
@@ -98,23 +108,70 @@ function CreateSource{T1,T2,T3<:Real}(
       not = Int64(round(otinput/medium.dt))
       SourceWaveform = CreateWaveform(1, not, medium.nT, waveform)
 
-      Sou = source(mt, loc, nloc, BDnloc, otinput, not, SourceWaveform)
+      Sou = MTsource(mt, loc, nloc, BDnloc, otinput, not, SourceWaveform)
     end
 
+    function CreateSfSource{T1,T2<:Real}(
+        loc :: Array{T1},
+        ot :: T2,
+        coeff :: Array{Int64}, # moment tensor (mxx,mzz,mxz)
+        waveform :: Array{Float64},
+        medium :: Union{elastic2d,acoustic2d},
+        nwf :: Union{nelwf2d,nacwf2d})
+
+        if length(coeff) != 2
+          error("Two elements in 2d coefficient (vx vz).")
+        end
+        if (!(coeff[1]==0 || coeff[1]==1) || !(coeff[2]==0 || coeff[2]==1))==true
+          error("coefficient can only be chosen from 0 and 1.")
+        end
+
+        nloc = [Int64(round(loc[1]/medium.dz)),  Int64(round(loc[2]/medium.dx))]
+        BDnloc = BDnlocation(medium.ext, nloc[1], nloc[2], medium.iflag)
+        otinput = ot
+        not = Int64(round(otinput/medium.dt))
+        SourceWaveform = CreateWaveform(1, not, medium.nT, waveform)
+
+        Sou = SFsource(coeff, loc, nloc, BDnloc, otinput, not, SourceWaveform)
+      end
 
 
-#=== source ===#
-function initsource{T1,T2,T3<:Real}(
+      function CreateSfSource{T1,T2<:Real}(
+          loc::Array{T1},
+          ot::T2,
+          coeff :: Array{Int64,1}, # moment tensor (mxx,myy,mzz,mxy,mxz,myz)
+          waveform::Array{Float64},
+          medium::Union{elastic3d,acoustic3d},
+          nwf::Union{nelwf3d,nacwf3d})
+
+          if length(coeff) != 3
+            error("Six elements in 3d moment tensor (mxx, myy, mzz, mxy, mxz, myz)")
+          end
+          if (!(coeff[1]==0 || coeff[1]==1) || !(coeff[2]==0 || coeff[2]==1) || !(coeff[3]==0 || coeff[3]==1))==true
+            error("coefficient can only be chosen from 0 and 1.")
+          end
+
+          nloc = [Int64(round(loc[1]/medium.dz)),  Int64(round(loc[2]/medium.dx)), Int64(round(loc[3]/medium.dy))]
+          BDnloc = BDnlocation(medium.ext, nloc[1], nloc[2], nloc[3], medium.iflag)
+          otinput = ot
+          not = Int64(round(otinput/medium.dt))
+          SourceWaveform = CreateWaveform(1, not, medium.nT, waveform)
+
+          Sou = MTsource(coeff, loc, nloc, BDnloc, otinput, not, SourceWaveform)
+        end
+
+#=== MT source ===#
+function initMTsource{T1,T2,T3<:Real}(
     sn::Int64,
     loc::Array{T1}, # location
     ot::Union{T2,Array{T2}}, # origin time
     mt:: Array{T3}, # type
     waveform::Array{Float64},
-    model::Union{elmod2d,acmod2d})
+    model::Union{elmod2d,acmod2d,elmod3d,acmod3d})
 
-    sou = Array{source}(sn)
+    sou = Array{MTsource}(sn)
     for i in 1:sn
-        sou[i] = CreateSource(
+        sou[i] = CreateMtSource(
         loc[i,:],
         ot[i],
         mt[i,:],
@@ -125,24 +182,24 @@ function initsource{T1,T2,T3<:Real}(
     return sou
 end
 
-
-function initsource{T1,T2,T3<:Real}(
+#=== SF source ===#
+function initSFsource{T1,T2<:Real}(
     sn::Int64,
     loc::Array{T1}, # location
     ot::Union{T2,Array{T2}}, # origin time
-    mt::Array{T3}, # type
+    coeff:: Array{Int64}, # type
     waveform::Array{Float64},
-    model::Union{elmod3d,acmod3d})
+    model::Union{elmod2d,acmod2d,elmod3d,acmod3d})
 
-    sou = Array{source}(sn)
+    sou = Array{SFsource}(sn)
     for i in 1:sn
-        sou[i] = CreateSource(
+        sou[i] = CreateSfSource(
         loc[i,:],
         ot[i],
-        mt[i,:],
+        coeff[i,:],
         waveform[:,i],
         model.medium,
         model.nwf)
-    end
+      end
     return sou
 end

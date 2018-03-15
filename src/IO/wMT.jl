@@ -16,7 +16,7 @@ function wMT(fid::IOStream,model::elmod2d)
     write(fid,"  HorizonX(m): $(medium.HX)\n") # HorizonX
     write(fid,"  Single Side PML Layer Number: $(medium.ext)\n") # PML
     write(fid,"  Time Step(ms): $(round(medium.dt*1000,2))\n") # dt
-    write(fid,"  Spatial Step(m): $(round(medium.dx,2))\n") # dx, dy & dz
+    write(fid,"  Spatial Step(m): dx:$(round(medium.dx,2)), dz:$(round(medium.dz,2))\n") # dx, dy & dz
     write(fid,"  Total Simulation Time(s): $(medium.T)\n") # Total Simulation Time
     write(fid,"  Discrete Total Simulation Time: $(medium.nT)\n") # Total time sampling number
     write(fid,"  Discrete Model Size(PML) [Z,X]\n") # model size with PML

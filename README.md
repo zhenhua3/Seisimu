@@ -11,13 +11,17 @@ Then when you can start use the package by typing "using seisimu" in julia pearl
 
 #=== Model initiation ===#
 
-model = initmodel([Args]; [Optional Args])
+model = init2DEL([Args]; [Optional Args])
+        init2DAC([Args]; [Optional Args])
+        init3DEL([Args]; [Optional Args])
+        init3DAC([Args]; [Optional Args])
+
 
 Args in order:
 
                (1) P velocity, S velocity: 1D or text/bin file (m/s)
 
-               (2) Density: Single value (kg/m3)
+               (2) Density: Single value (kg/m3) or tes/bin file
 
                (3) Depth, Horizon X: 2D medium / Depth, Horizon X, Horizon Y: 3D medium (m)
 
@@ -41,7 +45,8 @@ Note: Words in square brackets of optional args are the key words when called, s
 
 #=== Source initiation ===#
 
-source = initsource([Args])
+source = initMTsource([Args])
+         initSFsource([Args])
 
 Args in order:
 
@@ -51,7 +56,8 @@ Args in order:
 
                (3) 1D Array of the source origin time: vector (s)
 
-               (4) 2D Array of moment tensors: [m11 m22 m12]: 2D/ [m11 m22 m33 m12 m13 m23]: 3D
+               (4) MT source: 2D Array of moment tensors: [m11 m22 m12] in 2D/ [m11 m22 m33 m12 m13 m23] in 3D
+               SF source: 0 or 1 for single forces at vx, vy, vz directions.
 
                (5) Waveforms of the sources: [vector(waveform1) vector(waveform2) ...]
 
@@ -95,31 +101,3 @@ writeinfo()
 
     Note: 1. datatype includes two choices "rec" and "wf". "rec" is recordings and "wf" is wavefields.
             Target file is "info.bin"
-
-  ReadSimuPara() - Function can read simulation parameter in bin file, then provide necessary data for remodelling
-
-    (1) Medium, Sou, PeakFreq, wfsize, FD = ReadSimuPara(Path; SouFlag = true)
-    (2) Medium, PeakFreq, wfsize, FD = ReadSimuPara(Path)
-
-    Note: 1. parameter "SouFlag" has value: true or false. If true, output: Medium::Model, Sou::Union{Source, Array{Source}}, PeakFreq::Float64, wfsize::WF2DSize. If false, output: Medium::Model, PeakFreq::Float64, wfsize::WF2DSize.
-
-  ReadData() - Function
-    (1) Read data only with Input IOStream and known length
-      data = ReadData(fid::IOStream, datatype, datalength)
-
-    (2) Read data only with Input file path and known length
-      data = ReadData(Path, datatype, datalength)
-
-    (3) Read data and reshape data to a matrix and known length
-      data = ReadData(Path, datatype, RowNum, ColNum)
-
-    (4) Read data only but data length is unknown
-      data = ReadData(Path, datatype)
-
-      Note: datatype: Float64, Int64, etc
-  ReadBasis() - Function
-
-    (1) Read basis file and reshape basis to a certain size
-      basis = ReadBasis(Path)
-
->>>>>>> 7d1cb359e596d62551810e900a7e2582b1b687a1

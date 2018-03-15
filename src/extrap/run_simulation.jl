@@ -4,7 +4,7 @@ include("out_recwf.jl")
 include("out_wavefield.jl")
 
 function runsimu(model::Union{elmod2d,acmod2d},
-    sou::Array{source};
+    sou::Array{MTsource};
     rec = nothing,
     showevery = 100,
     RecDataPath = nothing,
@@ -16,7 +16,9 @@ function runsimu(model::Union{elmod2d,acmod2d},
 #=== No output ===#
     if rec == nothing && Slices == nothing
         for it = 1:model.medium.nT
-            addsou!(model.wf, sou, it)
+            for isn in 1:length(sou)
+                addmt!(model.wf, sou[isn], it)
+            end
             run!(model)
         end
 

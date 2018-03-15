@@ -1,6 +1,6 @@
 function simuwf(
     model::Union{elmod2d,acmod2d},
-    sou::Array{source},
+    sou::Array{MTsource},
     Slices::Union{UnitRange{Int64},StepRange{Int64,Int64},Array{Int64,1},Int64},
     OptCpnt::Array{String},
     WFDataPath::String)
@@ -8,9 +8,11 @@ function simuwf(
     nT = model.medium.nT
     fid = open(WFDataPath, "a+")
 
-    wIB(fid,model,Slices,OptCpnt)
+    # wIB(fid,model,Slices,OptCpnt)
     for it = 1 : nT
-         addsou!(model.wf,sou,it)
+        for isn in 1:length(sou)
+            addmt!(model.wf, sou[isn], it)
+        end
          run!(model)
          wDB(fid,model.wf,OptCpnt,it,Slices)
     end

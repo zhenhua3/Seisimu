@@ -5,5 +5,5 @@
 # wMSSB.jl : write Medium and Single Source info into Bin file
 # wMMSB.jl : write Medium and Multiple Sources info into Bin file
 # CheckCpnt.jl : Check if Output Components are in the Library
-# wSPT.jl : write Simulation Parameters into a TxT file
+(garbage) # wSPT.jl : write Simulation Parameters into a TxT file
 # wOPT.jl : write Output Parameters into a TxT file

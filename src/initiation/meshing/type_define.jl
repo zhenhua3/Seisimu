@@ -3,96 +3,96 @@
             #====================#
 
 #=== elastic 2d ===#
- type elastic2d{T1,T2,T3,T4<:Real}
+ type elastic2d{T1,T2,T3,T4,T5,T6,T7<:Real}
     pvel::Array{Float64,2}
     svel::Array{Float64,2}
     rho::Array{Float64,2}
     lambda::Array{Float64,2}
     mu::Array{Float64,2}
-    dx::Float64
-    dz::Float64
-    dt::Float64
-    DZ::T1
-    HX::T2
+    dx::T1
+    dz::T2
+    dt::T3
+    DZ::T4
+    HX::T5
     nDZ::Int64
     nHX::Int64
     BDnDZ::Int64
     BDnHX::Int64
-    T::T3 # Total Simulation Time
+    T::T6 # Total Simulation Time
     nT::Int64 # Total discretized sampling time
-    pkf::T4
+    pkf::T7
     ext::Int64
     iflag::Int64
 end
 #=== acoustic 2d ===#
- type acoustic2d{T1,T2,T3,T4<:Real}
+ type acoustic2d{T1,T2,T3,T4,T5,T6,T7<:Real}
     pvel::Array{Float64,2}
     rho::Array{Float64,2}
     lambda::Array{Float64,2}
-    dx::Float64
-    dz::Float64
-    dt::Float64
-    DZ::T1
-    HX::T2
+    dx::T1
+    dz::T2
+    dt::T3
+    DZ::T4
+    HX::T5
     nDZ::Int64
     nHX::Int64
     BDnDZ::Int64
     BDnHX::Int64
-    T::T3 # Total Simulation Time
+    T::T6 # Total Simulation Time
     nT::Int64 # Total discretized sampling time
-    pkf::T4
+    pkf::T7
     ext::Int64
     iflag::Int64
 end
 
 #=== elastic 3d ===#
- type elastic3d{T1,T2,T3,T4,T5<:Real}
+ type elastic3d{T1,T2,T3,T4,T5,T6,T7,T8,T9<:Real}
     pvel::Array{Float64,3}
     svel::Array{Float64,3}
     rho::Array{Float64,3}
     lambda::Array{Float64,3}
     mu::Array{Float64,3}
-    dx::Float64
-    dy::Float64
-    dz::Float64
-    dt::Float64
-    DZ::T1
-    HX::T2
-    HY::T3
+    dx::T1
+    dy::T2
+    dz::T3
+    dt::T4
+    DZ::T5
+    HX::T6
+    HY::T7
     nDZ::Int64
     nHX::Int64
     nHY::Int64
     BDnDZ::Int64
     BDnHX::Int64
     BDnHY::Int64
-    T::T4 # Total Simulation Time
+    T::T8 # Total Simulation Time
     nT::Int64 # Total discretized sampling time
-    pkf::T5
+    pkf::T9
     ext::Int64
     iflag::Int64
 end
 
 #=== acoustic 3d ===#
- type acoustic3d{T1,T2,T3,T4,T5<:Real}
+ type acoustic3d{T1,T2,T3,T4,T5,T6,T7,T8,T9<:Real}
     pvel::Array{Float64,3}
     rho::Array{Float64,3}
     lambda::Array{Float64,3}
-    dx::Float64
-    dy::Float64
-    dz::Float64
-    dt::Float64
-    DZ::T1
-    HX::T2
-    HY::T3
+    dx::T1
+    dy::T2
+    dz::T3
+    dt::T4
+    DZ::T5
+    HX::T6
+    HY::T7
     nDZ::Int64
     nHX::Int64
     nHY::Int64
     BDnDZ::Int64
     BDnHX::Int64
     BDnHY::Int64
-    T::T4 # Total Simulation Time
+    T::T8 # Total Simulation Time
     nT::Int64 # Total discretized sampling time
-    pkf::T5
+    pkf::T9
     ext::Int64
     iflag::Int64
 end

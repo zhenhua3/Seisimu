@@ -2,7 +2,7 @@
 #=== write MSB ===#
 function wMSB(
     model::Union{elmod2d},
-    sou::Array{source},
+    sou::Array{MTsource},
     sourcenumber::Int64,
     ParbinPath::Union{String, Void})
 
@@ -30,31 +30,17 @@ function wMSB(
             write(fid,Float64(pkf))
 
             write(fid,sourcenumber)
-            for i = 1:sourcenumber
+            for isn = 1:sourcenumber
                 write(fid,sou[i].nloc)
             end
-            for i = 1:sourcenumber
+            for isn = 1:sourcenumber
                 write(fid,sou[i].waveform)
             end
-            for i = 1:sourcenumber
+            for isn = 1:sourcenumber
                 write(fid,sou[i].not)
             end
-            for i = 1:sourcenumber
-                if sou[i].tp == "expl"
-                    write(fid,1)
-                elseif sou[i].tp == "sfx"
-                    write(fid,2)
-                elseif sou[i].tp == "sfz"
-                    write(fid,4)
-                elseif sou[i].tp == "scx"
-                    write(fid,5)
-                elseif sou[i].tp == "scz"
-                    write(fid,7)
-                elseif sou[i].tp == "DC"
-                    write(fid,8)
-                elseif sou[i].tp == "wy"
-                    write(fid,10)
-                end
+            for isn = 1:sourcenumber
+                write(fid,sou[i].mt)
             end
             close(fid)
         end

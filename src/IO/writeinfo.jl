@@ -2,7 +2,7 @@
 #===  ===#
 function writeinfo(
     model::Union{elmod2d,acmod2d},
-    sou::Array{source};
+    sou::Array{MTsource};
     PartextPath="SimuPara.txt",
     ParbinPath="SimuPara.bin")
 
@@ -20,7 +20,8 @@ function writeinfo(
         end
     end
 #=== SimuPara.bin ===#
-    wMSB(model,sou,sounumber,ParbinPath)
+    # disabled, in garbage folder
+    # wMSB(model,sou,sounumber,ParbinPath)
 end
 #======#
 
@@ -31,7 +32,7 @@ end
 #===  ===#
 function writeinfo(
     model::Union{elmod2d,acmod2d},
-    sou::Array{source},
+    sou::Array{MTsource},
     rec::receiver,
     OptCpnt::Array{String};
     PartextPath="SimuPara.txt",
@@ -50,8 +51,8 @@ function writeinfo(
             close(fid)
         end
     end
-#=== SimuPara.bin ===#
-    wMSB(model,sou,sounumber,ParbinPath)
+# #=== SimuPara.bin ===#
+#     wMSB(model,sou,sounumber,ParbinPath)
 end
 #======#
 
@@ -62,7 +63,7 @@ end
 #===  ===#
 function writeinfo(
     model::Union{elmod2d,acmod2d},
-    sou::Array{source},
+    sou::Array{MTsource},
     Slices::Union{StepRange{Int64,Int64},Array{Int64,1}},
     OptCpnt::Array{String};
     PartextPath="SimuPara.txt",
@@ -81,8 +82,8 @@ function writeinfo(
             close(fid)
         end
     end
-#=== SimuPara.bin ===#
-    wMSB(model,sou,sounumber,ParbinPath)
+# #=== SimuPara.bin ===#
+#     wMSB(model,sou,sounumber,ParbinPath)
 end
 #======#
 
@@ -97,7 +98,7 @@ end
 #===  ===#
 function writeinfo(
     model::Union{elmod2d,acmod2d},
-    sou::Array{source},
+    sou::Array{MTsource},
     Slices::Union{StepRange{Int64,Int64},Array{Int64,1}},
     rec::receiver,
     OptCpnt::Array{String};
@@ -117,8 +118,8 @@ function writeinfo(
             close(fid)
         end
     end
-#=== SimuPara.bin ===#
-    wMSB(model,sou,sounumber,ParbinPath)
+# #=== SimuPara.bin ===#
+#     wMSB(model,sou,sounumber,ParbinPath)
 end
 #======#
 
@@ -132,7 +133,7 @@ end
 #===  ===#
 function writeinfo(
     model::Union{elmod2d},
-    sou::Array{source},
+    sou::Array{MTsource},
     Slices::Union{StepRange{Int64,Int64},Array{Int64,1}};
     PartextPath="SimuPara.txt",
     ParbinPath="SimuPara.bin")
@@ -150,8 +151,8 @@ function writeinfo(
             close(fid)
         end
     end
-#=== SimuPara.bin ===#
-    wMSB(model,sou,sounumber,ParbinPath)
+# #=== SimuPara.bin ===#
+#     wMSB(model,sou,sounumber,ParbinPath)
 end
 #======#
 
@@ -165,7 +166,7 @@ end
 #===  ===#
 function writeinfo(
     model::Union{acmod2d},
-    sou::Array{source},
+    sou::Array{MTsource},
     Slices::Union{StepRange{Int64,Int64},Array{Int64,1}};
     PartextPath="SimuPara.txt",
     ParbinPath="SimuPara.bin")
@@ -183,7 +184,7 @@ function writeinfo(
             close(fid)
         end
     end
-#=== SimuPara.bin ===#
-    wMSB(model,sou,sounumber,ParbinPath)
+# #=== SimuPara.bin ===#
+#     wMSB(model,sou,sounumber,ParbinPath)
 end
 #======#

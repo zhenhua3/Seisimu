@@ -27,14 +27,14 @@ end
 
 
 ############ elastic medium 2d ############
-function model{T1,T2,T3,T4<:Real}(
-    pvel::Union{String,<:Real,Array{<:Real,1},StepRange{Int64,Int64},UnitRange{Int64},StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}},
-    svel::Union{Void,String,<:Real,Array{<:Real,1},StepRange{Int64,Int64},UnitRange{Int64},StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}},
-    rho::T1,
+function model{T1,T2,T3<:Real}(
+    pvel::Union{String,<:Real,Array{<:Real,1},StepRange{Int64,Int64},UnitRange{Int64},StepRangeLen{Float64,Base.TwicePrecision{Float64}}},
+    svel::Union{Void,String,<:Real,Array{<:Real,1},StepRange{Int64,Int64},UnitRange{Int64},StepRangeLen{Float64,Base.TwicePrecision{Float64}}},
+    rho::Union{<:Real,String},
     DZ::Union{<:Real,Array{<:Real,1},StepRange{Int64,Int64},UnitRange{Int64},StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}},
-    HX::T2,
-    pkf::T3,
-    T::T4,
+    HX::T1,
+    pkf::T2,
+    T::T3,
     ext::Int64,
     iflag::Int64,
     dx::Union{Void,<:Real},
@@ -97,7 +97,22 @@ function model{T1,T2,T3,T4<:Real}(
         end
         pvel = Float64.(reshape(pvel, DZ,HX))
         svel = Float64.(reshape(svel, DZ,HX))
-        rho = Float64.(zeros(DZ,HX) .+ rho)
+        if typeof(rho) == String
+            if rho[end-2:end] == "bin"
+                fid = open(rho,"r")
+                rho = read(fid,Float64, DZ*HX,1)
+                close(fid)
+            elseif rho[end-2:end] == "dat"
+                fid = open(rho,"r")
+                rho = readdlm(rho)
+                close(fid)
+            else error("Density file is not valid")
+            end
+            Rho = Float64.(reshape(rho, DZ,HX))
+        elseif typeof(rho)<:Real
+            Rho = Float64.(zeros(DZ,HX) .+ rho)
+        else error("Give a density value or file path")
+        end
         nDZ = DZ
         nHX = HX
         DZ = DZ*dz
@@ -160,7 +175,23 @@ function model{T1,T2,T3,T4<:Real}(
         nHX = Int64(round(HX/dx))
         Pvel = zeros(Float64,nDZ,nHX)
         Svel = zeros(Float64,nDZ,nHX)
-        rho = zeros(Float64,nDZ,nHX) .+ Float64.(rho)
+        if typeof(rho) == String
+            if rho[end-2:end] == "bin"
+                fid = open(rho,"r")
+                rho = read(fid,Float64, DZ*HX,1)
+                close(fid)
+            elseif rho[end-2:end] == "dat"
+                fid = open(rho,"r")
+                rho = readdlm(rho)
+                close(fid)
+            else error("Density file is not valid")
+            end
+            Rho = Float64.(reshape(rho, DZ,HX))
+        elseif typeof(rho)<:Real
+            Rho = Float64.(zeros(DZ,HX) .+ rho)
+        else error("Give a density value or file path")
+        end
+
         # velocity interval and depth interval
 
         Pvel[1:nlayerdep[1],:] = Float64.(pvel[1])
@@ -202,13 +233,13 @@ end
 
 
 ############ acoustic medium 2d ############
-  function model{T1,T2,T3,T4<:Real}(
+  function model{T1,T2,T3<:Real}(
     pvel::Union{String,<:Real,Array{<:Real,1},StepRange{Int64,Int64},UnitRange{Int64},StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}},
-    rho::T1,
+    rho::Union{<:Real,String},
     DZ::Union{<:Real,Array{<:Real,1},StepRange{Int64,Int64},UnitRange{Int64},StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}},
-    HX::T2,
-    pkf::T3,
-    T::T4,
+    HX::T1,
+    pkf::T2,
+    T::T3,
     ext::Int64,
     iflag::Int64,
     dx::Union{Void,<:Real},
@@ -257,7 +288,23 @@ end
             end
         end
         pvel = Float64.(reshape(pvel, DZ,HX))
-        rho = Float64.(zeros(DZ,HX) .+ rho)
+        if typeof(rho) == String
+            if rho[end-2:end] == "bin"
+                fid = open(rho,"r")
+                rho = read(fid,Float64, DZ*HX,1)
+                close(fid)
+            elseif rho[end-2:end] == "dat"
+                fid = open(rho,"r")
+                rho = readdlm(rho)
+                close(fid)
+            else error("Density file is not valid")
+            end
+            Rho = Float64.(reshape(rho, DZ,HX))
+        elseif typeof(rho)<:Real
+            Rho = Float64.(zeros(DZ,HX) .+ rho)
+        else error("Give a density value or file path")
+        end
+
         nDZ = DZ
         nHX = HX
         DZ = DZ*dz
@@ -327,7 +374,22 @@ end
         pvel = Float64.(Pvel)
     end
     pvel = ModExpand(pvel, ext, iflag) # 1 : free surface; 2: unlimited surface
-     rho = ModExpand(rho, ext, iflag)
+    if typeof(rho) == String
+        if rho[end-2:end] == "bin"
+            fid = open(rho,"r")
+            rho = read(fid,Float64, DZ*HX,1)
+            close(fid)
+        elseif rho[end-2:end] == "dat"
+            fid = open(rho,"r")
+            rho = readdlm(rho)
+            close(fid)
+        else error("Density file is not valid")
+        end
+        Rho = Float64.(reshape(rho, DZ,HX))
+    elseif typeof(rho)<:Real
+        Rho = Float64.(zeros(DZ,HX) .+ rho)
+    else error("Give a density value or file path")
+    end
     BDnDZ, BDnHX = size(pvel)
     lambda = Array{Float64,2}(BDnDZ,BDnHX)
     Rho = Array{Float64,2}(BDnDZ,BDnHX)
@@ -346,15 +408,15 @@ end
 
 
 ############ elastic medium 3d ############
- function model{T1,T2,T3,T4,T5<:Real}(
+ function model{T1,T2,T3,T4<:Real}(
     pvel::Union{String,<:Real,Array{<:Real,1},StepRange{Int64,Int64},UnitRange{Int64},StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}},
     svel::Union{Void,String,<:Real,Array{<:Real,1},StepRange{Int64,Int64},UnitRange{Int64},StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}},
-    rho::T1,
+    rho::Union{<:Real,String},
     DZ::Union{<:Real,Array{<:Real,1},StepRange{Int64,Int64},UnitRange{Int64},StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}},
-    HX::T2,
-    HY::T3,
-    pkf::T4,
-    T::T5,
+    HX::T1,
+    HY::T2,
+    pkf::T3,
+    T::T4,
     ext::Int64,
     iflag::Int64,
     dx::Union{Void,<:Real},
@@ -416,9 +478,24 @@ end
                 nT = Int64(round(T/dt))
             end
         end
-        pvel = reshape(pvel, DZ,HX,HY)
-        svel = reshape(svel, DZ,HX,HY)
-        rho = zeros(DZ,HX,HY) .+ rho
+        Pvel = reshape(pvel, DZ,HX,HY)
+        Svel = reshape(svel, DZ,HX,HY)
+        if typeof(rho) == String
+            if rho[end-2:end] == "bin"
+                fid = open(rho,"r")
+                rho = read(fid,Float64, DZ*HX*HY,1)
+                close(fid)
+            elseif rho[end-2:end] == "dat"
+                fid = open(rho,"r")
+                rho = readdlm(rho)
+                close(fid)
+            else error("Density file is not valid")
+            end
+            Rho = Float64.(reshape(rho, DZ,HX,HY))
+        elseif typeof(rho)<:Real
+            Rho = Float64.(zeros(DZ,HX,HY) .+ rho)
+        else error("Give a density value or file path")
+        end
         nDZ = DZ
         nHX = HX
         nHY = HY
@@ -485,7 +562,22 @@ end
         nHY = Int64(round(HY/dy))
         Pvel = zeros(nDZ,nHX,nHY)
         Svel = zeros(nDZ,nHX,nHY)
-         Rho = zeros(nDZ,nHX,nHY) .+ rho
+        if typeof(rho) == String
+            if rho[end-2:end] == "bin"
+                fid = open(rho,"r")
+                rho = read(fid,Float64, DZ*HX*HY,1)
+                close(fid)
+            elseif rho[end-2:end] == "dat"
+                fid = open(rho,"r")
+                rho = readdlm(rho)
+                close(fid)
+            else error("Density file is not valid")
+            end
+            Rho = Float64.(reshape(rho, DZ,HX,HY))
+        elseif typeof(rho)<:Real
+            Rho = Float64.(zeros(DZ,HX,HY) .+ rho)
+        else error("Give a density value or file path")
+        end
         # velocity interval and depth interval
 
         Pvel[1:nlayerdep[1],:,:] = pvel[1]
@@ -550,14 +642,14 @@ end
 
 
 ############ acoustic medium 3d ############
- function model{T1,T2,T3,T4,T5<:Real}(
+ function model{T1,T2,T3,T4<:Real}(
     pvel::Union{String,<:Real,Array{<:Real,1},StepRange{Int64,Int64},UnitRange{Int64},StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}},
-    rho::T1,
+    rho::Union{<:Real,String},
     DZ::Union{<:Real,Array{<:Real,1},StepRange{Int64,Int64},UnitRange{Int64},StepRangeLen{Float64,Base.TwicePrecision{Float64},Base.TwicePrecision{Float64}}},
-    HX::T2,
-    HY::T3,
-    pkf::T4,
-    T::T5,
+    HX::T1,
+    HY::T2,
+    pkf::T3,
+    T::T4,
     ext::Int64,
     iflag::Int64,
     dx::Union{Void,<:Real},
@@ -606,8 +698,23 @@ end
                 nT = Int64(round(T/dt))
             end
         end
-        pvel = reshape(pvel, DZ,HX,HY)
-        rho = zeros(DZ,HX,HY) .+ rho
+        Pvel = reshape(pvel, DZ,HX,HY)
+        if typeof(rho) == String
+            if rho[end-2:end] == "bin"
+                fid = open(rho,"r")
+                rho = read(fid,Float64, DZ*HX*HY,1)
+                close(fid)
+            elseif rho[end-2:end] == "dat"
+                fid = open(rho,"r")
+                rho = readdlm(rho)
+                close(fid)
+            else error("Density file is not valid")
+            end
+            Rho = Float64.(reshape(rho, DZ,HX,HY))
+        elseif typeof(rho)<:Real
+            Rho = Float64.(zeros(DZ,HX,HY) .+ rho)
+        else error("Give a density value or file path")
+        end
         nDZ = DZ
         nHX = HX
         nHY = HY
@@ -669,7 +776,22 @@ end
         nHX = Int64(round(HX/dx))
         nHY = Int64(round(HY/dy))
         Pvel = zeros(nDZ,nHX,nHY)
-        Rho = zeros(nDZ,nHX,nHY) .+ rho
+        if typeof(rho) == String
+            if rho[end-2:end] == "bin"
+                fid = open(rho,"r")
+                rho = read(fid,Float64, DZ*HX*HY,1)
+                close(fid)
+            elseif rho[end-2:end] == "dat"
+                fid = open(rho,"r")
+                rho = readdlm(rho)
+                close(fid)
+            else error("Density file is not valid")
+            end
+            Rho = Float64.(reshape(rho, DZ,HX,HY))
+        elseif typeof(rho)<:Real
+            Rho = Float64.(zeros(DZ,HX,HY) .+ rho)
+        else error("Give a density value or file path")
+        end
         # velocity interval and depth interval
         for i in 1:nlayerdep[1]
             Pvel[i,:,:] = Pvel[i,:,:] .+ pvel[1]
@@ -702,10 +824,7 @@ end
         pvel[i,:,:] = ModExpand(pvel[i,:,ext+1:ext+nHY], ext, nothing)
          rho[i,:,:] = ModExpand( rho[i,:,ext+1:ext+nHY], ext, nothing)
     end
-    # dz= Float32(dz)
-    # dx= Float32(dx)
-    # dy= Float32(dy)
-    # dt= Float32(dt)
+
     lambda = Array{Float64,3}(BDnDZ,BDnHX,BDnHY)
     Rho = Array{Float64,3}(BDnDZ,BDnHX,BDnHY)
     for i in 1 : BDnDZ
