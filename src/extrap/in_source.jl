@@ -39,7 +39,7 @@ function addmt!(wf::Union{elwf3d,acwf3d}, sou::MTsource, it::Int64)
 end
 
 #=== 3 ===# # add single force source #
-function addsf!(wf::Union{elwf3d,acwf3d}, sou::SFsource, isn::Int64, it::Int64)
+function addsf!(wf::Union{elwf3d,acwf3d}, sou::SFsource, it::Int64)
 
     wf.vx[sou.BDnloc[1],sou.BDnloc[2],sou.BDnloc[3]] = wf.vx[sou.BDnloc[1],sou.BDnloc[2],sou.BDnloc[3]] + sou.coeff[1]*sou.waveform[it]
 

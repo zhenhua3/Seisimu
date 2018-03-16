@@ -1,7 +1,7 @@
 
 function run!(model::elmod3d)
 
- path="/home/lzh/Dropbox/Zhenhua/Ongoing/MOR/deps/build/el3d_openmp.so"
+ path="/home/lzh/Dropbox/Zhenhua/Ongoing/Seisimu/deps/builds/el3d_openmp.so"
   ccall((:el3d_openmp,path),
   Void,
   (Ptr{Cdouble}, Cint, Cint, Cint, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble},
@@ -40,7 +40,7 @@ end
 
 function run!(model::acmod3d)
 
- path="/home/lzh/Dropbox/Zhenhua/Ongoing/MOR/deps/build/ac3d_openmp.so"
+ path="/home/lzh/Dropbox/Zhenhua/Ongoing/Seisimu/deps/builds/ac3d_openmp.so"
 
  ccall((:ac3d_openmp,path),
  Void,
@@ -67,7 +67,7 @@ end
 
 function run!(model::elmod2d)
 
- path="/home/lzh/Dropbox/Zhenhua/Ongoing/MOR/deps/build/el2d_openmp.so"
+ path="/home/lzh/Dropbox/Zhenhua/Ongoing/Seisimu/deps/builds/el2d_openmp.so"
 
  ccall((:el2d_openmp,path),
  Void,
@@ -96,7 +96,7 @@ end
 
 function run!(model::acmod2d)
 
- path="/home/lzh/Dropbox/Zhenhua/Ongoing/MOR/deps/build/ac2d_openmp.so"
+ path="/home/lzh/Dropbox/Zhenhua/Ongoing/Seisimu/deps/builds/ac2d_openmp.so"
 
  ccall((:ac2d_openmp,path),
  Void,

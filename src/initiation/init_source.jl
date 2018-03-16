@@ -157,7 +157,7 @@ function CreateMtSource{T1,T2,T3<:Real}(
           not = Int64(round(otinput/medium.dt))
           SourceWaveform = CreateWaveform(1, not, medium.nT, waveform)
 
-          Sou = MTsource(coeff, loc, nloc, BDnloc, otinput, not, SourceWaveform)
+          Sou = SFsource(coeff, loc, nloc, BDnloc, otinput, not, SourceWaveform)
         end
 
 #=== MT source ===#
