@@ -13,8 +13,8 @@ end
 #=== 2d ===# # add single force source #
 function addsf!(wf::Union{elwf2d,acwf2d}, sou::SFsource, it::Int64)
 
-    wf.vx[sou.BDnloc[1],sou.BDnloc[2]] = wf.vx[sou.BDnloc[1],sou.BDnloc[2]] + sou.coeff[1]*sou.waveform[it]
-    wf.vz[sou.BDnloc[1],sou.BDnloc[2]] = wf.vz[sou.BDnloc[1],sou.BDnloc[2]] + sou.coeff[2]*sou.waveform[it]
+    wf.vx[sou.BDnloc[1],sou.BDnloc[2]] = wf.vx[sou.BDnloc[1],sou.BDnloc[2]] + sou.coeff[2]*sou.waveform[it]
+    wf.vz[sou.BDnloc[1],sou.BDnloc[2]] = wf.vz[sou.BDnloc[1],sou.BDnloc[2]] + sou.coeff[1]*sou.waveform[it]
 
 end
 
@@ -41,10 +41,10 @@ end
 #=== 3 ===# # add single force source #
 function addsf!(wf::Union{elwf3d,acwf3d}, sou::SFsource, it::Int64)
 
-    wf.vx[sou.BDnloc[1],sou.BDnloc[2],sou.BDnloc[3]] = wf.vx[sou.BDnloc[1],sou.BDnloc[2],sou.BDnloc[3]] + sou.coeff[1]*sou.waveform[it]
+    wf.vx[sou.BDnloc[1],sou.BDnloc[2],sou.BDnloc[3]] = wf.vx[sou.BDnloc[1],sou.BDnloc[2],sou.BDnloc[3]] + sou.coeff[2]*sou.waveform[it]
 
-    wf.vy[sou.BDnloc[1],sou.BDnloc[2],sou.BDnloc[3]] = wf.vy[sou.BDnloc[1],sou.BDnloc[2],sou.BDnloc[3]] + sou.coeff[2]*sou.waveform[it]
+    wf.vy[sou.BDnloc[1],sou.BDnloc[2],sou.BDnloc[3]] = wf.vy[sou.BDnloc[1],sou.BDnloc[2],sou.BDnloc[3]] + sou.coeff[3]*sou.waveform[it]
 
-    wf.vz[sou.BDnloc[1],sou.BDnloc[2],sou.BDnloc[3]] = wf.vz[sou.BDnloc[1],sou.BDnloc[2],sou.BDnloc[3]] + sou.coeff[3]*sou.waveform[it]
+    wf.vz[sou.BDnloc[1],sou.BDnloc[2],sou.BDnloc[3]] = wf.vz[sou.BDnloc[1],sou.BDnloc[2],sou.BDnloc[3]] + sou.coeff[1]*sou.waveform[it]
 
 end
