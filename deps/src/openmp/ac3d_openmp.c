@@ -19,10 +19,10 @@ void ac3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
   #pragma omp parallel
   {
     // vxbtxx
-    #pragma omp for collapse(3) nowait
-    for(k=2; k<BD_ny_vx-2; k++)
+    #pragma omp for collapse(3) private(j) nowait
+    for(k=0; k<BD_ny_vx; k++)
     {
-      for(i=2; i<BD_nz_vx-2; i++)
+      for(i=0; i<BD_nz_vx; i++)
       {
         for(j=1; j<ext; j++)
         {
@@ -32,13 +32,6 @@ void ac3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
           2.0/(*(rho+i+(BD_nx_vx-1-j)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+i+(BD_nx_vx-j)*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)),
           dx, dt, pvxbtpp, bhalf, ahalf, ext, fdc);
         }
-      }
-    }
-    #pragma omp for collapse(3) nowait
-    for(k=2; k<BD_ny_vx-2; k++)
-    {
-      for(i=2; i<BD_nz_vx-2; i++)
-      {
         for(j=ext; j<BD_nx_vx-ext; j++)
         {
           body_x_3d(vx, BD_nz_vx, BD_nx_vx, BD_ny_vx, i, j, k,
@@ -51,7 +44,7 @@ void ac3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
 
     //********************* V_Y *********************//
     // vybtyy
-    #pragma omp for collapse(3) nowait
+    #pragma omp for collapse(2) private(k) nowait
     for(j=0; j<BD_nx_vy; j++)
     {
       for(i=0; i<BD_nz_vy; i++)
@@ -64,13 +57,6 @@ void ac3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
             2.0/(*(rho+i+j*BD_nz_tpp+(BD_ny_vy-1-k)*BD_nz_tpp*BD_nx_tpp)+*(rho+i+j*BD_nz_tpp+(BD_ny_vy-k)*BD_nz_tpp*BD_nx_tpp)),
             dy,dt, pvybtpp, bhalf, ahalf, ext, fdc);
         }
-      }
-    }
-    #pragma omp for collapse(3) nowait
-    for(j=0; j<BD_nx_vy; j++)
-    {
-      for(i=0; i<BD_nz_vy; i++)
-      {
         for(k=ext; k<BD_ny_vy-ext; k++)
         {
           body_y_3d(vy, BD_nz_vy, BD_nx_vy, BD_ny_vy, i, j, k,
@@ -83,7 +69,7 @@ void ac3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
 
     //********************* V_Z *********************//
     // vzbtzz
-    #pragma omp for collapse(3) nowait
+    #pragma omp for collapse(2) private(i) nowait
     for(j=0; j<BD_nx_vz; j++)
     {
       for(k=0; k<BD_ny_vz; k++)
@@ -96,13 +82,6 @@ void ac3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
             2.0/(*(rho+(BD_nz_vz-1-i)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)+*(rho+(BD_nz_vz-i)+j*BD_nz_tpp+k*BD_nz_tpp*BD_nx_tpp)),
             dz,dt, pvzbtpp, bhalf, ahalf, ext, fdc);
         }
-      }
-    }
-    #pragma omp for collapse(3) nowait
-    for(j=0; j<BD_nx_vz; j++)
-    {
-      for(k=0; k<BD_ny_vz; k++)
-      {
         for(i=ext; i<BD_nz_vz-ext; i++)
         {
           body_z_3d(vz, BD_nz_vz, BD_nx_vz, BD_ny_vz, i, j, k,
@@ -117,9 +96,9 @@ void ac3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
 
     //************ T_X ************//
     #pragma omp for collapse(2) private(j)
-    for(k=2; k<BD_ny_tpp-2; k++)
+    for(k=0; k<BD_ny_tpp; k++)
     {
-      for(i=2; i<BD_nz_tpp-2; i++)
+      for(i=0; i<BD_nz_tpp; i++)
       {
         for(j=2; j<ext; j++)
         {

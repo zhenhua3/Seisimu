@@ -18,8 +18,8 @@ void ac2d_openmp(double *vx, int BD_nx_vx, int BD_nz_vx,
   #pragma omp parallel
   {
     // vxbtxx
-    #pragma omp for private(j)
-      for(i=2; i<BD_nz_vx-2; i++)
+    #pragma omp for private(j) nowait
+      for(i=0; i<BD_nz_vx; i++)
       {
         for(j=1; j<ext; j++)
         {
@@ -40,7 +40,7 @@ void ac2d_openmp(double *vx, int BD_nx_vx, int BD_nz_vx,
 
   //********************* V_Z *********************//
     // vzbtzz
-    #pragma omp for private(i)
+    #pragma omp for private(i) nowait
     for(j=0; j<BD_nx_vz; j++)
     {
       for(i=1;i<ext;i++)
@@ -60,9 +60,11 @@ void ac2d_openmp(double *vx, int BD_nx_vx, int BD_nz_vx,
       }
     }
 
+    #pragma omp barrier
+
   //************ T_X ************//
     #pragma omp for private(j)
-    for(i=2; i<BD_nz_tpp-2; i++)
+    for(i=0; i<BD_nz_tpp; i++)
     {
       for(j=2; j<ext; j++)
       {

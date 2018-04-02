@@ -600,13 +600,11 @@ end
     svel = zeros(BDnDZ,BDnHX,BDnHY)
      rho = zeros(BDnDZ,BDnHX,BDnHY)
     # 1 : free surface; 2: unlimited surface
-    pvel[:,:,1] = ModExpand(Pvel[:,:,1], ext, iflag)
-    svel[:,:,1] = ModExpand(Svel[:,:,1], ext, iflag)
-    rho[:,:,1] = ModExpand( Rho[:,:,1], ext, iflag)
-    for i in 2:BDnHY
-        pvel[:,:,i] = pvel[:,:,1]
-        svel[:,:,i] = svel[:,:,1]
-         rho[:,:,i] = rho[:,:,1]
+
+    for i in 1:nHY
+        pvel[:,:,ext+i] = ModExpand(Pvel[:,:,i], ext, iflag)
+        svel[:,:,ext+i] = ModExpand(Svel[:,:,i], ext, iflag)
+         rho[:,:,ext+i] = ModExpand( Rho[:,:,i], ext, iflag)
     end
     for i in 1:BDnDZ
         pvel[i,:,:] = ModExpand(pvel[i,:,ext+1:ext+nHY], ext, nothing)
@@ -789,7 +787,7 @@ end
             end
             Rho = Float64.(reshape(rho, DZ,HX,HY))
         elseif typeof(rho)<:Real
-            Rho = Float64.(zeros(DZ,HX,HY) .+ rho)
+            Rho = Float64.(zeros(nDZ,nHX,nHY) .+ rho)
         else error("Give a density value or file path")
         end
         # velocity interval and depth interval
@@ -814,11 +812,10 @@ end
     pvel = zeros(BDnDZ,BDnHX,BDnHY)
      rho = zeros(BDnDZ,BDnHX,BDnHY)
     # 1 : free surface; 2: unlimited surface
-    pvel[:,:,1] = ModExpand(Pvel[:,:,1], ext, iflag)
-    rho[:,:,1] = ModExpand( Rho[:,:,1], ext, iflag)
-    for i in 2:BDnHY
-        pvel[:,:,i] = pvel[:,:,1]
-         rho[:,:,i] = rho[:,:,1]
+
+    for i in 1:nHY
+        pvel[:,:,ext+i] = ModExpand(Pvel[:,:,i], ext, iflag)
+         rho[:,:,ext+i] = ModExpand( Rho[:,:,i], ext, iflag)
     end
     for i in 1:BDnDZ
         pvel[i,:,:] = ModExpand(pvel[i,:,ext+1:ext+nHY], ext, nothing)

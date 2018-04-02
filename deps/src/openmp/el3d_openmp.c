@@ -27,10 +27,10 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
   #pragma omp parallel
   {
     // vxbtxx
-    #pragma omp for collapse(2) private(j)
-    for(k=2; k<BD_ny_vx-2; k++)
+    #pragma omp for collapse(2) private(j) nowait
+    for(k=0; k<BD_ny_vx; k++)
     {
-      for(i=2; i<BD_nz_vx-2; i++)
+      for(i=0; i<BD_nz_vx; i++)
       {
         for(j=1; j<ext; j++)
         {
@@ -50,7 +50,7 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
       }
     }
     // vybtxy
-    #pragma omp for collapse(2) private(j)
+    #pragma omp for collapse(2) private(j) nowait
     for(k=1; k<BD_ny_vy-1; k++)
     {
       for(i=2; i<BD_nz_vy-2; i++)
@@ -73,7 +73,7 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
       }
     }
     // vzbtxz
-    #pragma omp for collapse(2) private(j)
+    #pragma omp for collapse(2) private(j) nowait
     for(k=0; k<BD_ny_vz; k++)
     {
       for(i=0; i<BD_nz_vz; i++)
@@ -95,9 +95,12 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
         }
       }
     }
+
+    #pragma omp barrier
+
   //********************* V_Y *********************//
     // vxbtxy
-    #pragma omp for collapse(2) private(k)
+    #pragma omp for collapse(2) private(k) nowait
     for(j=0; j<BD_nx_vx; j++)
     {
       for(i=0; i<BD_nz_vx; i++)
@@ -120,7 +123,7 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
       }
     }
     // vybtyy
-    #pragma omp for collapse(2) private(k)
+    #pragma omp for collapse(2) private(k) nowait
     for(j=0; j<BD_nx_vy; j++)
     {
       for(i=0; i<BD_nz_vy; i++)
@@ -143,7 +146,7 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
       }
     }
     // vzbtyz
-    #pragma omp for collapse(2) private(k)
+    #pragma omp for collapse(2) private(k) nowait
     for(j=0; j<BD_nx_vz; j++)
     {
       for(i=0; i<BD_nz_vz; i++)
@@ -166,9 +169,11 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
       }
     }
 
+    #pragma omp barrier
+
   //********************* V_Z *********************//
     // vxbtxz
-    #pragma omp for collapse(2) private(i)
+    #pragma omp for collapse(2) private(i) nowait
     for(j=1; j<BD_nx_vx-1; j++)
     {
       for(k=2; k<BD_ny_vx-2; k++)
@@ -191,7 +196,7 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
       }
     }
     // vybtyz
-    #pragma omp for collapse(2) private(i)
+    #pragma omp for collapse(2) private(i) nowait
     for(j=0; j<BD_nx_vy; j++)
     {
       for(k=0; k<BD_ny_vy; k++)
@@ -214,7 +219,7 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
       }
     }
     // vzbtzz
-    #pragma omp for collapse(2) private(i)
+    #pragma omp for collapse(2) private(i) nowait
     for(j=0; j<BD_nx_vz; j++)
     {
       for(k=0; k<BD_ny_vz; k++)
@@ -237,8 +242,10 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
       }
     }
 
+    #pragma omp barrier
+
   //************ T_X ************//
-    #pragma omp for collapse(2) private(j)
+    #pragma omp for collapse(2) private(j) nowait
     for(k=2; k<BD_ny_tpp-2; k++)
     {
       for(i=2; i<BD_nz_tpp-2; i++)
@@ -256,7 +263,8 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
         }
       }
     }
-    #pragma omp for collapse(2) private(j)
+
+    #pragma omp for collapse(2) private(j) nowait
     for(k=1; k<BD_ny_txy-1; k++)
     {
       for(i=0; i<BD_nz_txy; i++)
@@ -281,7 +289,8 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
         }
       }
     }
-    #pragma omp for collapse(2) private(j)
+    
+    #pragma omp for collapse(2) private(j) nowait
     for(k=0; k<BD_ny_txz; k++)
     {
       for(i=0; i<BD_nz_txz; i++)
@@ -307,8 +316,10 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
       }
     }
 
+    #pragma omp barrier
+
   //************ T_Y ************//
-    #pragma omp for collapse(2) private(k)
+    #pragma omp for collapse(2) private(k) nowait
     for(i=0; i<BD_nz_tpp; i++)
     {
       for(j=0; j<BD_nx_tpp; j++)
@@ -326,7 +337,8 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
         }
       }
     }
-    #pragma omp for collapse(2) private(k)
+
+    #pragma omp for collapse(2) private(k) nowait
     for(i=0; i<BD_nz_txy; i++)
     {
       for(j=1; j<BD_nx_txy-1; j++)
@@ -351,7 +363,8 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
         }
       }
     }
-    #pragma omp for collapse(2) private(k)
+
+    #pragma omp for collapse(2) private(k) nowait
     for(i=0; i<BD_nz_tyz; i++)
     {
       for(j=0; j<BD_nx_tyz; j++)
@@ -376,8 +389,11 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
         }
       }
     }
+
+    #pragma omp barrier
+
   //************ T_Z ************//
-    #pragma omp for collapse(2) private(i)
+    #pragma omp for collapse(2) private(i) nowait
     for(j=0; j<BD_nx_tpp; j++)
     {
       for(k=0; k<BD_ny_tpp; k++)
@@ -395,8 +411,9 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
         }
       }
     }
-    #pragma omp for collapse(2) private(i)
-    for(j=1; j<BD_nx_txz-1; j++)
+
+    #pragma omp for collapse(2) private(i) nowait
+    for(j=0; j<BD_nx_txz; j++)
     {
       for(k=0; k<BD_ny_txz; k++)
       {
@@ -420,7 +437,7 @@ void el3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
         }
       }
     }
-    #pragma omp for collapse(2) private(i)
+    #pragma omp for collapse(2) private(i) nowait
     for(j=0; j<BD_nx_tyz; j++)
     {
       for(k=0; k<BD_ny_tyz; k++)

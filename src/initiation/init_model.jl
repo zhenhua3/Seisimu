@@ -24,6 +24,10 @@ function init2DEL{T1,T2,T3<:Real}(
     return elmod2d(medium, wf, nwf, FDC, pml)#, calpara)
 end
 
+function reset!(Model::elmod2d)
+    Model.wf = initelwf(Model.medium.nDZ, Model.medium.nHX, Model.medium.ext, Model.medium.iflag)
+    Model.pml = BD(Model.nwf, Model.medium)
+end
 
 #=== acoustic medium 2d ===#
 function init2DAC{T1,T2,T3<:Real}(
@@ -51,6 +55,10 @@ function init2DAC{T1,T2,T3<:Real}(
 end
 
 
+function reset!(Model::acmod2d)
+    Model.wf = initacwf(Model.medium.nDZ, Model.medium.nHX, Model.medium.ext, Model.medium.iflag)
+    Model.pml = BD(Model.nwf, Model.medium)
+end
 
 
 
@@ -85,7 +93,10 @@ end
 
 
 
-
+function reset!(Model::elmod3d)
+    Model.wf = initelwf(Model.medium.nDZ, Model.medium.nHX, Model.medium.nHY, Model.medium.ext, Model.medium.iflag)
+    Model.pml = BD(Model.nwf, Model.medium)
+end
 
 
 
@@ -114,4 +125,9 @@ function init3DAC{T1,T2,T3,T4<:Real}(
     pml = BD(nwf, medium)
     # calpara = wfpara(medium)
     return acmod3d(medium, wf, nwf, FDC, pml)#, calpara)
+end
+
+function reset!(Model::acmod3d)
+    Model.wf = initacwf(Model.medium.nDZ, Model.medium.nHX, Model.medium.nHY, Model.medium.ext, Model.medium.iflag)
+    Model.pml = BD(Model.nwf, Model.medium)
 end
