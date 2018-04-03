@@ -202,13 +202,13 @@ function model{T1,T2,T3<:Real}(
             Pvel[SumDep+1:SumDep+nlayerdep[iL],:] = Float64.(pvel[iL])
             Svel[SumDep+1:SumDep+nlayerdep[iL],:] = Float64.(svel[iL])
         end
-        pvel = Float64.(Pvel)
-        svel = Float64.(Svel)
+        Pvel = Float64.(Pvel)
+        Svel = Float64.(Svel)
     end
 
-    pvel = ModExpand(pvel, ext, iflag) # 1 : free surface; 2: unlimited surface
-    svel = ModExpand(svel, ext, iflag)
-    rho = ModExpand(rho, ext, iflag)
+    pvel = ModExpand(Pvel, ext, iflag) # 1 : free surface; 2: unlimited surface
+    svel = ModExpand(Svel, ext, iflag)
+    rho = ModExpand(Rho, ext, iflag)
     BDnDZ,BDnHX = size(pvel)
     lambda = Array{Float64,2}(BDnDZ,BDnHX)
     mu = Array{Float64,2}(BDnDZ,BDnHX)
@@ -362,7 +362,6 @@ end
 
         nHX = Int64(round(HX/dx))
         Pvel = zeros(Float64,nDZ,nHX)
-        rho = zeros(Float64,nDZ,nHX) .+ Float64.(rho)
         # velocity interval and depth interval
 
         Pvel[1:nlayerdep[1],:] = Float64.(pvel[1])
@@ -371,9 +370,9 @@ end
             SumDep = SumDep + nlayerdep[iL-1]
             Pvel[SumDep+1:SumDep+nlayerdep[iL],:] = Float64.(pvel[iL])
         end
-        pvel = Float64.(Pvel)
+        Pvel = Float64.(Pvel)
     end
-    pvel = ModExpand(pvel, ext, iflag) # 1 : free surface; 2: unlimited surface
+
     if typeof(rho) == String
         if rho[end-2:end] == "bin"
             fid = open(rho,"r")
@@ -390,6 +389,10 @@ end
         Rho = Float64.(zeros(DZ,HX) .+ rho)
     else error("Give a density value or file path")
     end
+
+    pvel = ModExpand(Pvel, ext, iflag) # 1 : free surface; 2: unlimited surface
+    rho = ModExpand(Rho, ext, iflag)
+
     BDnDZ, BDnHX = size(pvel)
     lambda = Array{Float64,2}(BDnDZ,BDnHX)
     Rho = Array{Float64,2}(BDnDZ,BDnHX)
