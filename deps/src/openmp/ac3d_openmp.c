@@ -19,7 +19,7 @@ void ac3d_openmp(double *vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
   #pragma omp parallel
   {
     // vxbtxx
-    #pragma omp for collapse(3) private(j) nowait
+    #pragma omp for collapse(2) private(j) nowait
     for(k=0; k<BD_ny_vx; k++)
     {
       for(i=0; i<BD_nz_vx; i++)
