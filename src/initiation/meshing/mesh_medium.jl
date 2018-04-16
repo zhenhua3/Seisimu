@@ -568,7 +568,7 @@ end
         if typeof(rho) == String
             if rho[end-2:end] == "bin"
                 fid = open(rho,"r")
-                rho = read(fid,Float64, DZ*HX*HY,1)
+                rho = read(fid,Float64, nDZ*nHX*nHY,1)
                 close(fid)
             elseif rho[end-2:end] == "dat"
                 fid = open(rho,"r")
@@ -576,9 +576,9 @@ end
                 close(fid)
             else error("Density file is not valid")
             end
-            Rho = Float64.(reshape(rho, DZ,HX,HY))
+            Rho = Float64.(reshape(rho, nDZ,nHX,nHY))
         elseif typeof(rho)<:Real
-            Rho = Float64.(zeros(DZ,HX,HY) .+ rho)
+            Rho = Float64.(zeros(nDZ,nHX,nHY) .+ rho)
         else error("Give a density value or file path")
         end
         # velocity interval and depth interval
@@ -780,7 +780,7 @@ end
         if typeof(rho) == String
             if rho[end-2:end] == "bin"
                 fid = open(rho,"r")
-                rho = read(fid,Float64, DZ*HX*HY,1)
+                rho = read(fid,Float64, nDZ*nHX*nHY,1)
                 close(fid)
             elseif rho[end-2:end] == "dat"
                 fid = open(rho,"r")
@@ -788,7 +788,7 @@ end
                 close(fid)
             else error("Density file is not valid")
             end
-            Rho = Float64.(reshape(rho, DZ,HX,HY))
+            Rho = Float64.(reshape(rho, nDZ,nHX,nHY))
         elseif typeof(rho)<:Real
             Rho = Float64.(zeros(nDZ,nHX,nHY) .+ rho)
         else error("Give a density value or file path")
