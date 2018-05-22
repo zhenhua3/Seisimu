@@ -82,10 +82,10 @@ function model{T1,T2,T3<:Real}(
             error("Peak frequency is too high for selected grid size")
         end
         if dt == nothing
-            dt = 0.406 * dz / max_pvel
+            dt = 0.406 * (min_svel / 10 / pkf) / max_pvel
             nT = Int64(round(T/dt))
         elseif dt !=nothing
-            if dt > 0.6*dz/max_pvel
+            if dt > 0.6*(min_svel / 10 / pkf)/max_pvel
                 error("Simulation does not satisfy stablity criterion:
                 maximum(pvel)*dt/dz < 0.6.")
             end
@@ -137,14 +137,14 @@ function model{T1,T2,T3<:Real}(
         if !(max_svel > 0 && max_pvel > 0 && min_svel > 0 && max_pvel > 0)
             error("Medium velocities have to be larger than 0")
         else
-            dz = min_svel / 20 / pkf
-            dx = min_svel / 20 / pkf
+            dz = min_svel / 10 / pkf
+            dx = min_svel / 10 / pkf
         end
         if dt == nothing
-            dt = 0.406 * dz / max_pvel
+            dt = 0.406 * (min_svel / 10 / pkf) / max_pvel
             nT = Int64(round(T/dt))
         elseif dt !=nothing
-            if dt > 0.6*dz/max_pvel
+            if dt > 0.6*(min_svel / 10 / pkf)/max_pvel
                 error("Simulation does not satisfy stablity criterion:
                 maximum(P velocity)*dt/dz < 0.6.")
             end
@@ -178,7 +178,7 @@ function model{T1,T2,T3<:Real}(
         if typeof(rho) == String
             if rho[end-2:end] == "bin"
                 fid = open(rho,"r")
-                rho = read(fid,Float64, DZ*HX,1)
+                rho = read(fid,Float64, nDZ*nHX,1)
                 close(fid)
             elseif rho[end-2:end] == "dat"
                 fid = open(rho,"r")
@@ -186,9 +186,9 @@ function model{T1,T2,T3<:Real}(
                 close(fid)
             else error("Density file is not valid")
             end
-            Rho = Float64.(reshape(rho, DZ,HX))
+            Rho = Float64.(reshape(rho, nDZ,nHX))
         elseif typeof(rho)<:Real
-            Rho = Float64.(zeros(DZ,HX) .+ rho)
+            Rho = Float64.(zeros(nDZ,nHX) .+ rho)
         else error("Give a density value or file path")
         end
 
@@ -202,12 +202,12 @@ function model{T1,T2,T3<:Real}(
             Pvel[SumDep+1:SumDep+nlayerdep[iL],:] = Float64.(pvel[iL])
             Svel[SumDep+1:SumDep+nlayerdep[iL],:] = Float64.(svel[iL])
         end
-        Pvel = Float64.(Pvel)
-        Svel = Float64.(Svel)
+        pvel = Float64.(Pvel)
+        svel = Float64.(Svel)
     end
 
-    pvel = ModExpand(Pvel, ext, iflag) # 1 : free surface; 2: unlimited surface
-    svel = ModExpand(Svel, ext, iflag)
+    pvel = ModExpand(pvel, ext, iflag) # 1 : free surface; 2: unlimited surface
+    svel = ModExpand(svel, ext, iflag)
     rho = ModExpand(Rho, ext, iflag)
     BDnDZ,BDnHX = size(pvel)
     lambda = Array{Float64,2}(BDnDZ,BDnHX)
@@ -274,10 +274,10 @@ end
             error("Peak frequency is too high for selected grid size")
         end
         if dt == nothing
-            dt = 0.406 * dz / max_pvel
+            dt = 0.406 * (min_pvel / 10 / pkf) / max_pvel
             nT = Int64(round(T/dt))
         elseif dt !=nothing
-            if dt > 0.6*dz/max_pvel
+            if dt > 0.6*(min_pvel / 10 / pkf)/max_pvel
                 error("Simulation does not satisfy stablity criterion:
                 maximum(pvel)*dt/dz < 0.6.")
             end
@@ -325,14 +325,14 @@ end
         if !(max_pvel > 0 && max_pvel > 0)
             error("Medium velocities have to be larger than 0")
         else
-            dz = min_pvel / 20 / pkf
-            dx = min_pvel / 20 / pkf
+            dz = min_pvel / 10 / pkf
+            dx = min_pvel / 10 / pkf
         end
         if dt == nothing
-            dt = 0.406 * dz / max_pvel
+            dt = 0.406 * (min_pvel / 10 / pkf) / max_pvel
             nT = Int64(round(T/dt))
         elseif dt !=nothing
-            if dt > 0.6*dz/max_pvel
+            if dt > 0.6*(min_svel / 10 / pkf)/max_pvel
                 error("Simulation does not satisfy stablity criterion:
                 maximum(P velocity)*dt/dz < 0.6.")
             end
@@ -362,6 +362,7 @@ end
 
         nHX = Int64(round(HX/dx))
         Pvel = zeros(Float64,nDZ,nHX)
+
         # velocity interval and depth interval
 
         Pvel[1:nlayerdep[1],:] = Float64.(pvel[1])
@@ -370,13 +371,13 @@ end
             SumDep = SumDep + nlayerdep[iL-1]
             Pvel[SumDep+1:SumDep+nlayerdep[iL],:] = Float64.(pvel[iL])
         end
-        Pvel = Float64.(Pvel)
+        pvel = Float64.(Pvel)
     end
 
     if typeof(rho) == String
         if rho[end-2:end] == "bin"
             fid = open(rho,"r")
-            rho = read(fid,Float64, DZ*HX,1)
+            rho = read(fid,Float64, nDZ*nHX,1)
             close(fid)
         elseif rho[end-2:end] == "dat"
             fid = open(rho,"r")
@@ -384,13 +385,12 @@ end
             close(fid)
         else error("Density file is not valid")
         end
-        Rho = Float64.(reshape(rho, DZ,HX))
+        Rho = Float64.(reshape(rho, nDZ,nHX))
     elseif typeof(rho)<:Real
-        Rho = Float64.(zeros(DZ,HX) .+ rho)
+        Rho = Float64.(zeros(nDZ,nHX) .+ rho)
     else error("Give a density value or file path")
     end
-
-    pvel = ModExpand(Pvel, ext, iflag) # 1 : free surface; 2: unlimited surface
+    pvel = ModExpand(pvel, ext, iflag) # 1 : free surface; 2: unlimited surface
     rho = ModExpand(Rho, ext, iflag)
 
     BDnDZ, BDnHX = size(pvel)
@@ -468,10 +468,10 @@ end
             error("Peak frequency is too high for selected grid size")
         end
         if dt == nothing
-            dt = 0.406 * dz / max_pvel
+            dt = 0.406 * (min_svel / 10 / pkf) / max_pvel
             nT = Int64(round(T/dt))
         elseif dt != nothing
-            if dt > 0.6 * dz / max_pvel
+            if dt > 0.6 * (min_svel / 10 / pkf) / max_pvel
                 error("Simulation does not satisfy stablity criterion:
                 maximum(pvel)*dt/dz < 0.6.")
             end
@@ -525,15 +525,15 @@ end
         if !(max_svel > 0 && max_pvel > 0 && min_svel > 0 && max_pvel > 0)
             error("Medium velocities have to be larger than 0")
         else
-            dz = min_svel / 20 / pkf
-            dx = min_svel / 20 / pkf
-            dy = min_svel / 20 / pkf
+            dz = min_svel / 10 / pkf
+            dx = min_svel / 10 / pkf
+            dy = min_svel / 10 / pkf
         end
         if dt == nothing
-            dt = 0.406 * dz / max_pvel
+            dt = 0.406 * (min_svel / 10 / pkf) / max_pvel
             nT = Int64(round(T/dt))
         elseif dt != nothing
-            if dt > 0.6*dz/max_pvel
+            if dt > 0.6*(min_svel / 10 / pkf)/max_pvel
                 error("Simulation does not satisfy stablity criterion:
                 maximum(P velocity)*dt/dz < 0.6.")
             end
@@ -603,11 +603,13 @@ end
     svel = zeros(BDnDZ,BDnHX,BDnHY)
      rho = zeros(BDnDZ,BDnHX,BDnHY)
     # 1 : free surface; 2: unlimited surface
-
-    for i in 1:nHY
-        pvel[:,:,ext+i] = ModExpand(Pvel[:,:,i], ext, iflag)
-        svel[:,:,ext+i] = ModExpand(Svel[:,:,i], ext, iflag)
-         rho[:,:,ext+i] = ModExpand( Rho[:,:,i], ext, iflag)
+    pvel[:,:,1] = ModExpand(Pvel[:,:,1], ext, iflag)
+    svel[:,:,1] = ModExpand(Svel[:,:,1], ext, iflag)
+    rho[:,:,1] = ModExpand( Rho[:,:,1], ext, iflag)
+    for i in 2:BDnHY
+        pvel[:,:,i] = pvel[:,:,1]
+        svel[:,:,i] = svel[:,:,1]
+         rho[:,:,i] = rho[:,:,1]
     end
     for i in 1:BDnDZ
         pvel[i,:,:] = ModExpand(pvel[i,:,ext+1:ext+nHY], ext, nothing)
@@ -686,10 +688,10 @@ end
             error("Peak frequency is too high for selected grid size")
         end
         if dt == nothing
-            dt = 0.406 * dz / max_pvel
+            dt = 0.406 * (min_pvel / 10 / pkf) / max_pvel
             nT = Int64(round(T/dt))
         elseif dt !=nothing
-            if dt > 0.6*dz/max_pvel
+            if dt > 0.6*(min_pvel / 10 / pkf)/max_pvel
                 error("Simulation does not satisfy stablity criterion:
                 maximum(pvel)*dt/dz < 0.6.")
             end
@@ -738,15 +740,15 @@ end
         if !(max_pvel > 0 && max_pvel > 0)
             error("Medium velocities have to be larger than 0")
         else
-            dz = min_pvel / 20 / pkf
-            dx = min_pvel / 20 / pkf
-            dy = min_pvel / 20 / pkf
+            dz = min_pvel / 10 / pkf
+            dx = min_pvel / 10 / pkf
+            dy = min_pvel / 10 / pkf
         end
         if dt == nothing
-            dt = 0.406 * dz / max_pvel
+            dt = 0.406 * (min_pvel / 10 / pkf) / max_pvel
             nT = Int64(round(T/dt))
         elseif dt !=nothing
-            if dt > 0.6*dz/max_pvel
+            if dt > 0.6*(min_pvel / 10 / pkf)/max_pvel
                 error("Simulation does not satisfy stablity criterion:
                 maximum(P velocity)*dt/dz < 0.6.")
             end
@@ -815,10 +817,11 @@ end
     pvel = zeros(BDnDZ,BDnHX,BDnHY)
      rho = zeros(BDnDZ,BDnHX,BDnHY)
     # 1 : free surface; 2: unlimited surface
-
-    for i in 1:nHY
-        pvel[:,:,ext+i] = ModExpand(Pvel[:,:,i], ext, iflag)
-         rho[:,:,ext+i] = ModExpand( Rho[:,:,i], ext, iflag)
+    pvel[:,:,1] = ModExpand(Pvel[:,:,1], ext, iflag)
+    rho[:,:,1] = ModExpand( Rho[:,:,1], ext, iflag)
+    for i in 2:BDnHY
+        pvel[:,:,i] = pvel[:,:,1]
+         rho[:,:,i] = rho[:,:,1]
     end
     for i in 1:BDnDZ
         pvel[i,:,:] = ModExpand(pvel[i,:,ext+1:ext+nHY], ext, nothing)
