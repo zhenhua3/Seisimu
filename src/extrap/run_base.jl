@@ -65,6 +65,58 @@ function run!(model::acmod3d)
   model.pml.bhalf, model.pml.ahalf, model.pml.bfull, model.pml.afull)
 end
 
+
+function run!(snapshot_path::String, intvl::Int64, model::acmod3d, threadim::Array{Int64,1})
+
+  ColNum = Int64((model.medium.nT - mod(model.medium.nT,intvl))/intvl)
+  RowNum = 0;
+  vx_start = 1;
+  vx_offset = model.nwf.BDnvx[1]*model.nwf.BDnvx[2]*model.nwf.BDnvx[3];
+  RowNum += vx_offset;
+  vy_start = vx_start + vx_offset;
+  vy_offset = model.nwf.BDnvy[1]*model.nwf.BDnvy[2]*model.nwf.BDnvy[3];
+  RowNum += vy_offset;
+  vz_start = vy_start + vy_offset;
+  vz_offset = model.nwf.BDnvz[1]*model.nwf.BDnvz[2]*model.nwf.BDnvz[3];
+  RowNum += vz_offset;
+  tpp_start =  vz_start + vz_offset;;
+  tpp_offset = model.nwf.BDntpp[1]*model.nwf.BDntpp[2]*model.nwf.BDntpp[3];
+  RowNum += tpp_offset;
+  dim = RowNum*ColNum
+
+  blockdim = [Int64(ceil(model.medium.BDnHX/threadim[1])),
+        Int64(ceil(model.medium.BDnHY/threadim[2])),
+        Int64(ceil(model.medium.BDnDZ/threadim[3]))]
+
+  path="/home/lzh/Dropbox/Zhenhua/Ongoing/Seisimu/deps/src/cuda/ac3d_cuda.so"
+
+  ccall((:ac3d_cuda,path),
+  Void,
+  (Ptr{Cdouble}, Cint, Cint, Cint, Ptr{Cdouble},
+   Ptr{Cdouble}, Cint, Cint, Cint, Ptr{Cdouble},
+   Ptr{Cdouble}, Cint, Cint, Cint, Ptr{Cdouble},
+   Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble},
+   Cint, Cint, Cint,
+   Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble},
+   Cint, Cdouble, Cdouble, Cdouble, Cdouble, Cint,
+   Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble},
+   Ptr{UInt8}, Clonglong, Cint, Ptr{Clonglong}, Ptr{Clonglong}),
+   model.wf.vx, model.nwf.BDnvx[2], model.nwf.BDnvx[3], model.nwf.BDnvx[1],
+   model.pml.PVxBTpp,
+   model.wf.vy, model.nwf.BDnvy[2], model.nwf.BDnvy[3], model.nwf.BDnvy[1],
+   model.pml.PVyBTpp,
+   model.wf.vz, model.nwf.BDnvz[2], model.nwf.BDnvz[3], model.nwf.BDnvz[1],
+   model.pml.PVzBTpp,
+   model.wf.tpp, model.pml.PTppBVx, model.pml.PTppBVy, model.pml.PTppBVz,
+   model.nwf.BDntpp[2], model.nwf.BDntpp[3], model.nwf.BDntpp[1],
+   model.medium.rho, model.medium.lambda, model.fdc,
+   model.medium.nT, model.medium.dt, model.medium.dx, model.medium.dy, model.medium.dz, model.medium.ext,
+   model.pml.bhalf, model.pml.ahalf, model.pml.bfull, model.pml.afull,
+   snapshot_path, dim, intvl,
+   threadim, blockdim)
+end
+
+
 function run!(model::elmod2d)
 
  path="/home/lzh/Dropbox/Zhenhua/Ongoing/Seisimu/deps/builds/el2d_openmp.so"
