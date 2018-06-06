@@ -1,11 +1,14 @@
 __constant__ double dev_fdc[4];
 
 ////////////// acoustic 3D kernel //////////////////
-__global__ void ackernel_v(double *dev_vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
-  double *dev_vy, int BD_nx_vy, int BD_ny_vy, int BD_nz_vy,
-  double *dev_vz, int BD_nx_vz, int BD_ny_vz, int BD_nz_vz,
-  double *dev_tpp, int BD_nx_tpp, int BD_ny_tpp, int BD_nz_tpp,
-  double *dev_rho, double dx, double dy, double dz, double dt)
+__global__ void ackernel_v(double *dev_vx, int BD_nx_vx, int BD_nz_vx,
+  double *dev_vy, int BD_nx_vy, int BD_nz_vy,
+  double *dev_vz, int BD_nx_vz, int BD_nz_vz,
+  double *dev_tpp, int BD_nx_tpp, int BD_nz_tpp,
+  double *dev_rho, double dx, double dy, double dz, double dt,
+  int StreamDim_vx, int StreamDim_vy, int StreamDim_vz,
+  int StreamStart_vx, int StreamStart_vy, int StreamStart_vz,
+  int StreamStart_tpp, int StreamStart_rho)
 {
   int tX = threadIdx.x + blockIdx.x*blockDim.x;
   int tY = threadIdx.y + blockIdx.y*blockDim.y;
@@ -17,18 +20,18 @@ __global__ void ackernel_v(double *dev_vx, int BD_nx_vx, int BD_ny_vx, int BD_nz
   double tmp_rho;
   //***************** vx ********************//
   tid_vx = tZ + tX*BD_nz_vx + tY*BD_nx_vx*BD_nz_vx;
-  tid_rho_0 = tZ + (tX+0)*BD_nz_tpp + tY*BD_nx_tpp*BD_nz_tpp;
-  tid_rho_1 = tZ + (tX+1)*BD_nz_tpp + tY*BD_nx_tpp*BD_nz_tpp;
+  tid_rho_0 = tZ + (tX+0)*BD_nz_tpp + (tY+StreamStart_vx-StreamStart_rho)*BD_nx_tpp*BD_nz_tpp;
+  tid_rho_1 = tZ + (tX+1)*BD_nz_tpp + (tY+StreamStart_vx-StreamStart_rho)*BD_nx_tpp*BD_nz_tpp;
 
   //***************** vx by tpp ********************//
-  if(tX < BD_nx_vx-1 && tX > 0 && tY < BD_ny_vx && tZ < BD_nz_vx)
+  if(tX < BD_nx_vx-1 && tX > 0 && tY < StreamDim_vx && tZ < BD_nz_vx)
   {
     tmp_rho = (0.5*(*(dev_rho + tid_rho_0) + *(dev_rho + tid_rho_1)))/dt;
 
-    tid_tpp_0 = tZ + (tX-1)*BD_nz_tpp + tY*BD_nx_tpp*BD_nz_tpp;
-    tid_tpp_1 = tZ + (tX+0)*BD_nz_tpp + tY*BD_nx_tpp*BD_nz_tpp;
-    tid_tpp_2 = tZ + (tX+1)*BD_nz_tpp + tY*BD_nx_tpp*BD_nz_tpp;
-    tid_tpp_3 = tZ + (tX+2)*BD_nz_tpp + tY*BD_nx_tpp*BD_nz_tpp;
+    tid_tpp_0 = tZ + (tX-1)*BD_nz_tpp + (tY+StreamStart_vx-StreamStart_tpp)*BD_nx_tpp*BD_nz_tpp;
+    tid_tpp_1 = tZ + (tX+0)*BD_nz_tpp + (tY+StreamStart_vx-StreamStart_tpp)*BD_nx_tpp*BD_nz_tpp;
+    tid_tpp_2 = tZ + (tX+1)*BD_nz_tpp + (tY+StreamStart_vx-StreamStart_tpp)*BD_nx_tpp*BD_nz_tpp;
+    tid_tpp_3 = tZ + (tX+2)*BD_nz_tpp + (tY+StreamStart_vx-StreamStart_tpp)*BD_nx_tpp*BD_nz_tpp;
     //
     *(dev_vx+tid_vx) = *(dev_vx+tid_vx)
     + ((*(dev_tpp+tid_tpp_0)* *(dev_fdc)
@@ -39,18 +42,18 @@ __global__ void ackernel_v(double *dev_vx, int BD_nx_vx, int BD_ny_vx, int BD_nz
 
   //***************** vy ********************//
   tid_vy = tZ + tX*BD_nz_vy + tY*BD_nx_vy*BD_nz_vy;
-  tid_rho_0 = tZ + tX*BD_nz_tpp + (tY+0)*BD_nx_tpp*BD_nz_tpp;
-  tid_rho_1 = tZ + tX*BD_nz_tpp + (tY+1)*BD_nx_tpp*BD_nz_tpp;
+  tid_rho_0 = tZ + tX*BD_nz_tpp + (tY+StreamStart_vy-StreamStart_rho+0)*BD_nx_tpp*BD_nz_tpp;
+  tid_rho_1 = tZ + tX*BD_nz_tpp + (tY+StreamStart_vy-StreamStart_rho+1)*BD_nx_tpp*BD_nz_tpp;
 
   //***************** vy by tpp********************//
-  if(tX < BD_nx_vy && tY > 0 && tY < BD_ny_vy-1 && tZ < BD_nz_vy)
+  if(tX < BD_nx_vy && tY < StreamDim_vy && tZ < BD_nz_vy)
   {
     tmp_rho = (0.5*(*(dev_rho + tid_rho_0) + *(dev_rho + tid_rho_1)))/dt;
 
-    tid_tpp_0 = tZ + tX*BD_nz_tpp + (tY-1)*BD_nx_tpp*BD_nz_tpp;
-    tid_tpp_1 = tZ + tX*BD_nz_tpp + (tY+0)*BD_nx_tpp*BD_nz_tpp;
-    tid_tpp_2 = tZ + tX*BD_nz_tpp + (tY+1)*BD_nx_tpp*BD_nz_tpp;
-    tid_tpp_3 = tZ + tX*BD_nz_tpp + (tY+2)*BD_nx_tpp*BD_nz_tpp;
+    tid_tpp_0 = tZ + tX*BD_nz_tpp + (tY+0)*BD_nx_tpp*BD_nz_tpp;
+    tid_tpp_1 = tZ + tX*BD_nz_tpp + (tY+1)*BD_nx_tpp*BD_nz_tpp;
+    tid_tpp_2 = tZ + tX*BD_nz_tpp + (tY+2)*BD_nx_tpp*BD_nz_tpp;
+    tid_tpp_3 = tZ + tX*BD_nz_tpp + (tY+3)*BD_nx_tpp*BD_nz_tpp;
 
     *(dev_vy+tid_vy) = *(dev_vy+tid_vy)
     + ((*(dev_tpp+tid_tpp_0)* *(dev_fdc)
@@ -61,18 +64,18 @@ __global__ void ackernel_v(double *dev_vx, int BD_nx_vx, int BD_ny_vx, int BD_nz
 
   //***************** vz ********************//
   tid_vz = tZ + tX*BD_nz_vz + tY*BD_nx_vz*BD_nz_vz;
-  tid_rho_0 = (tZ+0) + tX*BD_nz_tpp + tY*BD_nx_tpp*BD_nz_tpp;
-  tid_rho_1 = (tZ+1) + tX*BD_nz_tpp + tY*BD_nx_tpp*BD_nz_tpp;
+  tid_rho_0 = (tZ+0) + tX*BD_nz_tpp + (tY+StreamStart_vz-StreamStart_rho)*BD_nx_tpp*BD_nz_tpp;
+  tid_rho_1 = (tZ+1) + tX*BD_nz_tpp + (tY+StreamStart_vz-StreamStart_rho)*BD_nx_tpp*BD_nz_tpp;
 
   //***************** vz by tpp ********************//
-  if(tX < BD_nx_vz && tY < BD_ny_vz && tZ < BD_nz_vz-1 && tZ > 0)
+  if(tX < BD_nx_vz && tY < StreamDim_vz && tZ < BD_nz_vz-1 && tZ > 0)
   {
     tmp_rho = (0.5*(*(dev_rho + tid_rho_0) + *(dev_rho + tid_rho_1)))/dt;
 
-    tid_tpp_0 = (tZ-1) + tX*BD_nz_tpp + tY*BD_nx_tpp*BD_nz_tpp;
-    tid_tpp_1 = (tZ+0) + tX*BD_nz_tpp + tY*BD_nx_tpp*BD_nz_tpp;
-    tid_tpp_2 = (tZ+1) + tX*BD_nz_tpp + tY*BD_nx_tpp*BD_nz_tpp;
-    tid_tpp_3 = (tZ+2) + tX*BD_nz_tpp + tY*BD_nx_tpp*BD_nz_tpp;
+    tid_tpp_0 = (tZ-1) + tX*BD_nz_tpp + (tY+StreamStart_vz-StreamStart_rho)*BD_nx_tpp*BD_nz_tpp;
+    tid_tpp_1 = (tZ+0) + tX*BD_nz_tpp + (tY+StreamStart_vz-StreamStart_rho)*BD_nx_tpp*BD_nz_tpp;
+    tid_tpp_2 = (tZ+1) + tX*BD_nz_tpp + (tY+StreamStart_vz-StreamStart_rho)*BD_nx_tpp*BD_nz_tpp;
+    tid_tpp_3 = (tZ+2) + tX*BD_nz_tpp + (tY+StreamStart_vz-StreamStart_rho)*BD_nx_tpp*BD_nz_tpp;
 
     *(dev_vz+tid_vz) = *(dev_vz+tid_vz) + ((*(dev_tpp+tid_tpp_0)* *(dev_fdc)
     + *(dev_tpp+tid_tpp_1)* *(dev_fdc+1)
@@ -82,12 +85,13 @@ __global__ void ackernel_v(double *dev_vx, int BD_nx_vx, int BD_ny_vx, int BD_nz
   }
 }
 
-__global__ void ackernel_tau(double *dev_vx, int BD_nx_vx, int BD_ny_vx, int BD_nz_vx,
-  double *dev_vy, int BD_nx_vy, int BD_ny_vy, int BD_nz_vy,
-  double *dev_vz, int BD_nx_vz, int BD_ny_vz, int BD_nz_vz,
-  double *dev_tpp, int BD_nx_tpp, int BD_ny_tpp, int BD_nz_tpp,
+__global__ void ackernel_tau(double *dev_vx, int BD_nx_vx, int BD_nz_vx,
+  double *dev_vy, int BD_nx_vy, int BD_nz_vy,
+  double *dev_vz, int BD_nx_vz, int BD_nz_vz,
+  double *dev_tpp, int BD_nx_tpp, int BD_nz_tpp,
   double *dev_lambda,
-  double dx, double dy, double dz, double dt)
+  double dx, double dy, double dz, double dt,
+  int StreamDim_tpp)
   {
     int tX = threadIdx.x + blockIdx.x*blockDim.x;
     int tY = threadIdx.y + blockIdx.y*blockDim.y;
@@ -104,7 +108,7 @@ __global__ void ackernel_tau(double *dev_vx, int BD_nx_vx, int BD_ny_vx, int BD_
     tid_lambda_tpp = tZ + tX*BD_nz_tpp + tY*BD_nz_tpp*BD_nx_tpp;
 
     //**************** tau_pp by vx ********************//
-    if(tX > 1 && tX < BD_nx_tpp-2 && tY < BD_ny_tpp && tZ < BD_nz_tpp)
+    if(tX > 1 && tX < BD_nx_tpp-2 && tY < StreamDim_tpp && tZ < BD_nz_tpp)
     {
       tid_vx_0 = tZ + (tX-2)*BD_nz_vx + tY*BD_nz_vx*BD_nx_vx;
       tid_vx_1 = tZ + (tX-1)*BD_nz_vx + tY*BD_nz_vx*BD_nx_vx;
@@ -120,12 +124,12 @@ __global__ void ackernel_tau(double *dev_vx, int BD_nx_vx, int BD_ny_vx, int BD_
       + *(dev_lambda+tid_lambda_tpp) * tmp_vx;
     }
     //**************** tau_pp by vy ********************//
-    if(tX < BD_nx_tpp && tY > 1 && tY < BD_ny_tpp-2  && tZ < BD_nz_tpp)
+    if(tX < BD_nx_tpp && tY < StreamDim_tpp  && tZ < BD_nz_tpp)
     {
-      tid_vy_0 = tZ + tX*BD_nz_vy + (tY-2)*BD_nz_vy*BD_nx_vy;
-      tid_vy_1 = tZ + tX*BD_nz_vy + (tY-1)*BD_nz_vy*BD_nx_vy;
-      tid_vy_2 = tZ + tX*BD_nz_vy + (tY+0)*BD_nz_vy*BD_nx_vy;
-      tid_vy_3 = tZ + tX*BD_nz_vy + (tY+1)*BD_nz_vy*BD_nx_vy;
+      tid_vy_0 = tZ + tX*BD_nz_vy + (tY+0)*BD_nz_vy*BD_nx_vy;
+      tid_vy_1 = tZ + tX*BD_nz_vy + (tY+1)*BD_nz_vy*BD_nx_vy;
+      tid_vy_2 = tZ + tX*BD_nz_vy + (tY+2)*BD_nz_vy*BD_nx_vy;
+      tid_vy_3 = tZ + tX*BD_nz_vy + (tY+3)*BD_nz_vy*BD_nx_vy;
 
       tmp_vy = ((*(dev_vy+tid_vy_0)* *(dev_fdc)
       + *(dev_vy+tid_vy_1)* *(dev_fdc+1)
@@ -136,7 +140,7 @@ __global__ void ackernel_tau(double *dev_vx, int BD_nx_vx, int BD_ny_vx, int BD_
       + *(dev_lambda+tid_lambda_tpp) * tmp_vy;
     }
     //**************** tau_pp by vz ********************//
-    if(tX < BD_nx_tpp && tY < BD_ny_tpp && tZ > 1 && tZ < BD_nz_tpp-2)
+    if(tX < BD_nx_tpp && tY < StreamDim_tpp && tZ > 1 && tZ < BD_nz_tpp-2)
     {
       tid_vz_0 = (tZ-2) + tX*BD_nz_vz + tY*BD_nz_vz*BD_nx_vz;
       tid_vz_1 = (tZ-1) + tX*BD_nz_vz + tY*BD_nz_vz*BD_nx_vz;

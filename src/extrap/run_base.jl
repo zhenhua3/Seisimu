@@ -66,27 +66,17 @@ function run!(model::acmod3d)
 end
 
 
-function run!(snapshot_path::String, intvl::Int64, model::acmod3d, threadim::Array{Int64,1})
+function run!(model::acmod3d, snapshot_path::String; intvl=1, threadim=[16,16,4], AssignedStreamNum=6)
 
-  ColNum = Int64((model.medium.nT - mod(model.medium.nT,intvl))/intvl)
-  RowNum = 0;
-  vx_start = 1;
-  vx_offset = model.nwf.BDnvx[1]*model.nwf.BDnvx[2]*model.nwf.BDnvx[3];
-  RowNum += vx_offset;
-  vy_start = vx_start + vx_offset;
-  vy_offset = model.nwf.BDnvy[1]*model.nwf.BDnvy[2]*model.nwf.BDnvy[3];
-  RowNum += vy_offset;
-  vz_start = vy_start + vy_offset;
-  vz_offset = model.nwf.BDnvz[1]*model.nwf.BDnvz[2]*model.nwf.BDnvz[3];
-  RowNum += vz_offset;
-  tpp_start =  vz_start + vz_offset;;
-  tpp_offset = model.nwf.BDntpp[1]*model.nwf.BDntpp[2]*model.nwf.BDntpp[3];
-  RowNum += tpp_offset;
-  dim = RowNum*ColNum
-
+  acMemcpyGroup = acMemcpy(model,AssignedStreamNum)
   blockdim = [Int64(ceil(model.medium.BDnHX/threadim[1])),
-        Int64(ceil(model.medium.BDnHY/threadim[2])),
+        Int64(ceil(acMemcpyGroup.vx_PV_offset[1]/threadim[2])),
         Int64(ceil(model.medium.BDnDZ/threadim[3]))]
+  RowNumber = TotalHToDDataSizeInBytes(model.nwf)
+  ColNumber = Int64(ceil(model.medium.nT/intvl))
+  dim = RowNumber*ColNumber
+
+
 
   path="/home/lzh/Dropbox/Zhenhua/Ongoing/Seisimu/deps/src/cuda/ac3d_cuda.so"
 
@@ -100,7 +90,12 @@ function run!(snapshot_path::String, intvl::Int64, model::acmod3d, threadim::Arr
    Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble},
    Cint, Cdouble, Cdouble, Cdouble, Cdouble, Cint,
    Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble},
-   Ptr{UInt8}, Clonglong, Cint, Ptr{Clonglong}, Ptr{Clonglong}),
+   Ptr{UInt8}, Clonglong, Cint, Ptr{Clonglong}, Ptr{Clonglong},
+   Cint, Cint, Cint,
+   Ptr{Cint}, Ptr{Cint}, Ptr{Cint}, Ptr{Cint}, Ptr{Cint},
+   Ptr{Cint}, Ptr{Cint}, Ptr{Cint}, Ptr{Cint}, Ptr{Cint},
+   Ptr{Cint}, Ptr{Cint}, Ptr{Cint}, Ptr{Cint}, Ptr{Cint},
+   Ptr{Cint}, Ptr{Cint}, Ptr{Cint}, Ptr{Cint}, Ptr{Cint}),
    model.wf.vx, model.nwf.BDnvx[2], model.nwf.BDnvx[3], model.nwf.BDnvx[1],
    model.pml.PVxBTpp,
    model.wf.vy, model.nwf.BDnvy[2], model.nwf.BDnvy[3], model.nwf.BDnvy[1],
@@ -112,8 +107,16 @@ function run!(snapshot_path::String, intvl::Int64, model::acmod3d, threadim::Arr
    model.medium.rho, model.medium.lambda, model.fdc,
    model.medium.nT, model.medium.dt, model.medium.dx, model.medium.dy, model.medium.dz, model.medium.ext,
    model.pml.bhalf, model.pml.ahalf, model.pml.bfull, model.pml.afull,
-   snapshot_path, dim, intvl,
-   threadim, blockdim)
+   snapshot_path, dim, intvl, threadim, blockdim,
+   acMemcpyGroup.AssignedStreamNum, acMemcpyGroup.TotalStreamNum, acMemcpyGroup.RegStreamDim,
+   acMemcpyGroup.vx_PV_start,acMemcpyGroup.vy_PV_start,acMemcpyGroup.vz_PV_start,
+   acMemcpyGroup.tpp_PV_start,acMemcpyGroup.rho_PV_start,
+   acMemcpyGroup.vx_PV_offset,acMemcpyGroup.vy_PV_offset,acMemcpyGroup.vz_PV_offset,
+   acMemcpyGroup.tpp_PV_offset,acMemcpyGroup.rho_PV_offset,
+   acMemcpyGroup.vx_SS_start,acMemcpyGroup.vy_SS_start,acMemcpyGroup.vz_SS_start,
+   acMemcpyGroup.tpp_SS_start,acMemcpyGroup.lambda_SS_start,
+   acMemcpyGroup.vx_SS_offset,acMemcpyGroup.vy_SS_offset,acMemcpyGroup.vz_SS_offset,
+   acMemcpyGroup.tpp_SS_offset,acMemcpyGroup.lambda_SS_offset)
 end
 
 

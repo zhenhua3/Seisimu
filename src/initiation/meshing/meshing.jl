@@ -1,4 +1,4 @@
-include("type_define.jl")
+
 include("mesh_medium.jl")
 include("boundary.jl")
 include("fd_coefficient.jl")

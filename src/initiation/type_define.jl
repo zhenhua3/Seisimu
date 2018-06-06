@@ -312,3 +312,77 @@ type acmod3d
     fdc::Array{Float64,1}
     pml::acbd3d
 end
+
+#==== GPU acoustic stream ====#
+type acstream
+ vx_PV_start::Array{Int32,1}
+ vy_PV_start::Array{Int32,1}
+ vz_PV_start::Array{Int32,1}
+ tpp_PV_start::Array{Int32,1}
+ rho_PV_start::Array{Int32,1}
+ vx_PV_offset::Array{Int32,1}
+ vy_PV_offset::Array{Int32,1}
+ vz_PV_offset::Array{Int32,1}
+ tpp_PV_offset::Array{Int32,1}
+ rho_PV_offset::Array{Int32,1}
+ vx_SS_start::Array{Int32,1}
+ vy_SS_start::Array{Int32,1}
+ vz_SS_start::Array{Int32,1}
+ tpp_SS_start::Array{Int32,1}
+ lambda_SS_start::Array{Int32,1}
+ vx_SS_offset::Array{Int32,1}
+ vy_SS_offset::Array{Int32,1}
+ vz_SS_offset::Array{Int32,1}
+ tpp_SS_offset::Array{Int32,1}
+ lambda_SS_offset::Array{Int32,1}
+ AssignedStreamNum::Int64
+ TotalStreamNum::Int64
+ RegStreamDim::Int64
+end
+
+#==== GPU elastic stream ====#
+type elstream
+ vx_PV_start::Array{Int32,1}
+ vy_PV_start::Array{Int32,1}
+ vz_PV_start::Array{Int32,1}
+ txx_PV_start::Array{Int32,1}
+ tyy_PV_start::Array{Int32,1}
+ tzz_PV_start::Array{Int32,1}
+ txy_PV_start::Array{Int32,1}
+ txz_PV_start::Array{Int32,1}
+ tyz_PV_start::Array{Int32,1}
+ rho_PV_start::Array{Int32,1}
+ vx_PV_offset::Array{Int32,1}
+ vy_PV_offset::Array{Int32,1}
+ vz_PV_offset::Array{Int32,1}
+ txx_PV_offset::Array{Int32,1}
+ tyy_PV_offset::Array{Int32,1}
+ tzz_PV_offset::Array{Int32,1}
+ txy_PV_offset::Array{Int32,1}
+ txz_PV_offset::Array{Int32,1}
+ tyz_PV_offset::Array{Int32,1}
+ rho_PV_offset::Array{Int32,1}
+
+ vx_SS_start::Array{Int32,1}
+ vy_SS_start::Array{Int32,1}
+ vz_SS_start::Array{Int32,1}
+ txx_SS_start::Array{Int32,1}
+ tyy_SS_start::Array{Int32,1}
+ tzz_SS_start::Array{Int32,1}
+ txy_SS_start::Array{Int32,1}
+ txz_SS_start::Array{Int32,1}
+ tyz_SS_start::Array{Int32,1}
+ lambda_SS_start::Array{Int32,1}
+ mu_SS_start::Array{Int32,1}
+ vx_SS_offset::Array{Int32,1}
+ vy_SS_offset::Array{Int32,1}
+ vz_SS_offset::Array{Int32,1}
+ txx_SS_offset::Array{Int32,1}
+ tyy_SS_offset::Array{Int32,1}
+ tzz_SS_offset::Array{Int32,1}
+ txy_SS_offset::Array{Int32,1}
+ txz_SS_offset::Array{Int32,1}
+ tyz_SS_offset::Array{Int32,1}
+ lambda_SS_offset::Array{Int32,1}
+ mu_SS_offset::Array{Int32,1}
+end

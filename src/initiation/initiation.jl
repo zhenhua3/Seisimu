@@ -1,4 +1,7 @@
+include("type_define.jl")
 include("meshing/meshing.jl")
 include("init_model.jl")
 include("init_receiver.jl")
 include("init_source.jl")
+include("initGPU/TotalHToDDataSize.jl")
+include("initGPU/MemCpyGroups.jl")

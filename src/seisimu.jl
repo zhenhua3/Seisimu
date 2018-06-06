@@ -13,6 +13,6 @@ module seisimu
     Ricker,initMTsource,initSFsource,
     runsimu,
     acmod2d,elmod3d,acmod3d,elmod2d,
-    addmt!,addsf!,run!, write_mor
+    addmt!,addsf!,run!, write_mor, acMemcpy, MemCpyGroups
 
 end
